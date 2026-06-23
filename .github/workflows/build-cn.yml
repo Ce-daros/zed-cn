@@ -40,7 +40,7 @@ jobs:
         shell: powershell
         run: |
           $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-          $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe"
+          $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\setup.exe"
           $installPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
           if (-not $installPath) {
             throw "Visual Studio Build Tools with MSVC were not found."
@@ -48,12 +48,13 @@ jobs:
           $args = @(
             "modify",
             "--installPath", $installPath,
-            "--add", "Microsoft.VisualStudio.Component.VC.14.44.17.14.x86.x64.Spectre",
+            "--add", "Microsoft.VisualStudio.Component.VC.Tools.x86.x64.Spectre",
             "--quiet",
             "--norestart"
           )
-          $process = Start-Process -FilePath $installer -ArgumentList $args -Wait -PassThru
+          $process = Start-Process -FilePath $installer -ArgumentList $args -Wait -PassThru -NoNewWindow
           if ($process.ExitCode -ne 0 -and $process.ExitCode -ne 3010) {
+            Write-Error "Visual Studio Installer failed with exit code $($process.ExitCode)"
             exit $process.ExitCode
           }
 
