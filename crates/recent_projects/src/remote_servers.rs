@@ -1026,7 +1026,7 @@ impl RemoteServerPickerDelegate {
                         .text_ellipsis()
                         .when(is_wsl, |this| {
                             this.child(
-                                Label::new("WSL:")
+                                Label::new("WSL：")
                                     .size(LabelSize::Small)
                                     .color(Color::Muted),
                             )
@@ -1371,7 +1371,7 @@ impl PickerDelegate for RemoteServerPickerDelegate {
                 .child(confirm_button("打开".into()))
                 .into_any_element()
         } else {
-            confirm_button("Select".into()).into_any_element()
+            confirm_button("选择".into()).into_any_element()
         };
 
         Some(
@@ -2427,7 +2427,7 @@ impl RemoteServerProjects {
                             .pb_1()
                             .child(
                                 ModalHeader::new().child(
-                                    Headline::new("Dev Containers").size(HeadlineSize::XSmall),
+                                    Headline::new("开发容器").size(HeadlineSize::XSmall),
                                 ),
                             )
                             .child(ListSeparator)

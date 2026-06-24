@@ -435,7 +435,7 @@ impl Render for AddToolchainState {
                             .child(
                                 v_flex()
                                     .child(
-                                        Label::new("Scope")
+                                        Label::new("范围")
                                             .size(LabelSize::Small)
                                             .color(Color::Muted)
                                             .mt_1()
