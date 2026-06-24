@@ -67,9 +67,11 @@ use settings::{
     update_settings_file,
 };
 use smallvec::SmallVec;
+use std::cell::Cell;
 use std::future::Future;
 use std::ops::Range;
 use std::path::Path;
+use std::rc::Rc;
 use std::{sync::Arc, time::Duration, usize};
 use strum::{IntoEnumIterator, VariantNames};
 use theme_settings::ThemeSettings;
@@ -163,7 +165,8 @@ enum TrashCancel {
     Cancel,
 }
 
-struct GitMenuState {
+#[derive(Clone, Copy)]
+struct GitPanelViewOptionsMenuState {
     sort_by: GitPanelSortBy,
     group_by: GitPanelGroupBy,
     tree_view: bool,
@@ -208,74 +211,111 @@ fn git_panel_context_menu(
 
 fn git_panel_view_options_menu(
     focus_handle: FocusHandle,
-    state: GitMenuState,
     window: &mut Window,
     cx: &mut App,
 ) -> Entity<ContextMenu> {
-    ContextMenu::build(window, cx, move |context_menu, _, _| {
+    let view_options_menu_state = Rc::new(Cell::new(GitPanelViewOptionsMenuState {
+        sort_by: GitPanelSettings::get_global(cx).sort_by,
+        group_by: GitPanelSettings::get_global(cx).group_by,
+        tree_view: GitPanelSettings::get_global(cx).tree_view,
+    }));
+
+    ContextMenu::build_persistent(window, cx, move |context_menu, _, _| {
+        let state = view_options_menu_state.get();
+
         context_menu
-            .context(focus_handle)
+            .context(focus_handle.clone())
             .header("视图")
-            .item(
-                ContextMenuEntry::new("List")
+            .item({
+                let view_options_menu_state = view_options_menu_state.clone();
+                ContextMenuEntry::new("列表")
                     .toggle(IconPosition::End, !state.tree_view)
                     .handler(move |window, cx| {
                         if state.tree_view {
+                            view_options_menu_state.set(GitPanelViewOptionsMenuState {
+                                tree_view: false,
+                                ..state
+                            });
                             window.dispatch_action(Box::new(ToggleTreeView), cx);
                         }
-                    }),
-            )
-            .item(
-                ContextMenuEntry::new("Tree")
+                    })
+            })
+            .item({
+                let view_options_menu_state = view_options_menu_state.clone();
+                ContextMenuEntry::new("树状")
                     .toggle(IconPosition::End, state.tree_view)
                     .handler(move |window, cx| {
                         if !state.tree_view {
+                            view_options_menu_state.set(GitPanelViewOptionsMenuState {
+                                tree_view: true,
+                                ..state
+                            });
                             window.dispatch_action(Box::new(ToggleTreeView), cx);
                         }
-                    }),
-            )
+                    })
+            })
             .when(!state.tree_view, |this| {
                 this.separator()
                     .header("排序方式")
-                    .item(
-                        ContextMenuEntry::new("Path")
+                    .item({
+                        let view_options_menu_state = view_options_menu_state.clone();
+                        ContextMenuEntry::new("路径")
                             .toggle(IconPosition::End, state.sort_by == GitPanelSortBy::Path)
                             .handler(move |window, cx| {
                                 if !state.tree_view {
+                                    view_options_menu_state.set(GitPanelViewOptionsMenuState {
+                                        sort_by: GitPanelSortBy::Path,
+                                        ..state
+                                    });
                                     window.dispatch_action(Box::new(SetSortByPath), cx);
                                 }
-                            }),
-                    )
-                    .item(
-                        ContextMenuEntry::new("Name")
+                            })
+                    })
+                    .item({
+                        let view_options_menu_state = view_options_menu_state.clone();
+                        ContextMenuEntry::new("名称")
                             .toggle(IconPosition::End, state.sort_by == GitPanelSortBy::Name)
                             .handler(move |window, cx| {
                                 if !state.tree_view {
+                                    view_options_menu_state.set(GitPanelViewOptionsMenuState {
+                                        sort_by: GitPanelSortBy::Name,
+                                        ..state
+                                    });
                                     window.dispatch_action(Box::new(SetSortByName), cx);
                                 }
-                            }),
-                    )
+                            })
+                    })
             })
             .separator()
             .header("分组方式")
-            .item(
-                ContextMenuEntry::new("None")
+            .item({
+                let view_options_menu_state = view_options_menu_state.clone();
+                ContextMenuEntry::new("无")
                     .toggle(IconPosition::End, state.group_by == GitPanelGroupBy::None)
                     .handler(move |window, cx| {
                         if state.group_by != GitPanelGroupBy::None {
+                            view_options_menu_state.set(GitPanelViewOptionsMenuState {
+                                group_by: GitPanelGroupBy::None,
+                                ..state
+                            });
                             window.dispatch_action(Box::new(SetGroupByNone), cx);
                         }
-                    }),
-            )
-            .item(
-                ContextMenuEntry::new("Status")
+                    })
+            })
+            .item({
+                let view_options_menu_state = view_options_menu_state.clone();
+                ContextMenuEntry::new("状态")
                     .toggle(IconPosition::End, state.group_by == GitPanelGroupBy::Status)
                     .handler(move |window, cx| {
                         if state.group_by != GitPanelGroupBy::Status {
+                            view_options_menu_state.set(GitPanelViewOptionsMenuState {
+                                group_by: GitPanelGroupBy::Status,
+                                ..state
+                            });
                             window.dispatch_action(Box::new(SetGroupByStatus), cx);
                         }
-                    }),
-            )
+                    })
+            })
     })
 }
 
@@ -4465,11 +4505,6 @@ impl GitPanel {
             .menu(move |window, cx| {
                 Some(git_panel_view_options_menu(
                     focus_handle.clone(),
-                    GitMenuState {
-                        sort_by: GitPanelSettings::get_global(cx).sort_by,
-                        group_by: GitPanelSettings::get_global(cx).group_by,
-                        tree_view: GitPanelSettings::get_global(cx).tree_view,
-                    },
                     window,
                     cx,
                 ))

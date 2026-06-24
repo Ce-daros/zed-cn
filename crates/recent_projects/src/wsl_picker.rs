@@ -98,7 +98,7 @@ impl picker::PickerDelegate for WslPickerDelegate {
     }
 
     fn placeholder_text(&self, _window: &mut Window, _cx: &mut App) -> Arc<str> {
-        Arc::from("Enter WSL distro name")
+        Arc::from("输入 WSL 发行版名称")
     }
 
     fn update_matches(
@@ -203,7 +203,7 @@ impl WslOpenModal {
         cx: &mut Context<Self>,
     ) -> Self {
         let delegate = WslPickerDelegate::new();
-        let picker = cx.new(|cx| Picker::uniform_list(delegate, window, cx).modal(false));
+        let picker = cx.new(|cx| Picker::uniform_list(delegate, window, cx).embedded());
 
         let selected = cx.subscribe_in(
             &picker,

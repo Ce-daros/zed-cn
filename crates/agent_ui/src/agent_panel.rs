@@ -75,6 +75,7 @@ use feature_flags::{
 };
 
 use fs::Fs;
+use futures::FutureExt as _;
 use gpui::{
     Action, Anchor, Animation, AnimationExt, AnyElement, App, AsyncWindowContext, ClipboardItem,
     Entity, EventEmitter, ExternalPaths, FocusHandle, Focusable, KeyContext, Pixels,
@@ -109,6 +110,7 @@ const MIN_PANEL_WIDTH: Pixels = px(300.);
 const LAST_USED_AGENT_KEY: &str = "agent_panel__last_used_external_agent";
 const LAST_CREATED_ENTRY_KIND_KEY: &str = "agent_panel__last_created_entry_kind";
 const TERMINAL_AGENT_TELEMETRY_ID: &str = "terminal";
+const TERMINAL_INIT_COMMAND_STARTUP_TIMEOUT: Duration = Duration::from_secs(5);
 const KNOWN_TERMINAL_AGENT_COMMANDS: &[&str] = &[
     "agent", // Unfortunately, both Cursor cli + grok
     "agy",
@@ -912,19 +914,19 @@ fn format_timestamp_human(dt: &DateTime<Utc>) -> String {
     let duration = now.signed_duration_since(*dt);
 
     let relative = if duration.num_seconds() < 0 {
-        "in the future".to_string()
+        "未来".to_string()
     } else if duration.num_seconds() < 60 {
         let seconds = duration.num_seconds();
-        format!("{seconds} seconds ago")
+        format!("{seconds} 秒前")
     } else if duration.num_minutes() < 60 {
         let minutes = duration.num_minutes();
-        format!("{minutes} minutes ago")
+        format!("{minutes} 分钟前")
     } else if duration.num_hours() < 24 {
         let hours = duration.num_hours();
-        format!("{hours} hours ago")
+        format!("{hours} 小时前")
     } else {
         let days = duration.num_days();
-        format!("{days} days ago")
+        format!("{days} 天前")
     };
 
     format!("{} ({})", dt.to_rfc3339(), relative)
@@ -2058,25 +2060,63 @@ impl AgentPanel {
         run_init_command
             .then(|| AgentSettings::get_global(cx).terminal_init_command.clone())
             .flatten()
+            .filter(|command| !command.trim().is_empty())
     }
 
     fn write_terminal_init_command(
         terminal: &Entity<terminal::Terminal>,
         init_command: Option<String>,
-        cx: &mut App,
+        cx: &mut Context<Self>,
     ) {
         let Some(command) = init_command else {
             return;
         };
+
+        if !terminal.read(cx).is_pty() {
+            terminal.update(cx, |terminal, _| {
+                terminal.write_init_command(Self::terminal_init_command_input(command))
+            });
+            return;
+        }
+
+        let startup = terminal.update(cx, |terminal, _| {
+            terminal.start_init_command_startup_handshake()
+        });
+
+        let terminal = terminal.downgrade();
+        cx.spawn(async move |_this, cx| {
+            // Fall back to the timeout so the init command is still delivered if
+            // the shell never echoes the marker.
+            let timeout = cx
+                .background_executor()
+                .timer(TERMINAL_INIT_COMMAND_STARTUP_TIMEOUT);
+            futures::select_biased! {
+                _ = startup.fuse() => {}
+                _ = timeout.fuse() => {}
+            }
+
+            let input = Self::terminal_init_command_input(command);
+            if let Err(error) = terminal.update(cx, move |terminal, cx| {
+                if !terminal.write_init_command_after_startup(input, cx) {
+                    log::debug!(
+                        "skipping terminal init command because the terminal is no longer eligible"
+                    );
+                }
+            }) {
+                log::debug!("skipping terminal init command because the terminal closed: {error}");
+            }
+            anyhow::Ok(())
+        })
+        .detach_and_log_err(cx);
+    }
+
+    fn terminal_init_command_input(command: String) -> Vec<u8> {
         let mut input = command.into_bytes();
         // CR, not "\r\n": "\r\n" puts PowerShell into continuation
         // mode (same convention as the activation-script writes in
         // `TerminalBuilder::new`).
         input.push(b'\x0d');
-        // `write_init_command`, not `input`: the latter sets `keyboard_input_sent`,
-        // which would auto-close the terminal (hiding the error) if the shell
-        // fails to spawn after we've written the command.
-        terminal.update(cx, |terminal, _| terminal.write_init_command(input));
+        input
     }
 
     fn insert_terminal(
@@ -3696,7 +3736,7 @@ impl AgentPanel {
 
     fn copy_thread_to_clipboard(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let Some(thread) = self.active_native_agent_thread(cx) else {
-            Self::show_deferred_toast(&self.workspace, "No active native thread to copy", cx);
+            Self::show_deferred_toast(&self.workspace, "没有可复制的原生会话", cx);
             return;
         };
 
@@ -3717,7 +3757,7 @@ impl AgentPanel {
                         workspace.show_toast(
                             workspace::Toast::new(
                                 workspace::notifications::NotificationId::unique::<ThreadCopiedToast>(),
-                                "Thread copied to clipboard (base64 encoded)",
+                                "会话已复制到剪贴板（Base64 编码）",
                             )
                             .autohide(),
                             cx,
@@ -3756,17 +3796,17 @@ impl AgentPanel {
 
     fn load_thread_from_clipboard(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         if !self.has_open_project(cx) {
-            Self::show_deferred_toast(&self.workspace, "Open a project to load a thread", cx);
+            Self::show_deferred_toast(&self.workspace, "打开项目后才能加载会话", cx);
             return;
         }
 
         let Some(clipboard) = cx.read_from_clipboard() else {
-            Self::show_deferred_toast(&self.workspace, "No clipboard content available", cx);
+            Self::show_deferred_toast(&self.workspace, "没有可用的剪贴板内容", cx);
             return;
         };
 
         let Some(encoded) = clipboard.text() else {
-            Self::show_deferred_toast(&self.workspace, "Clipboard does not contain text", cx);
+            Self::show_deferred_toast(&self.workspace, "剪贴板中没有文本内容", cx);
             return;
         };
 
@@ -3776,7 +3816,7 @@ impl AgentPanel {
             Err(_) => {
                 Self::show_deferred_toast(
                     &self.workspace,
-                    "Failed to decode clipboard content (expected base64)",
+                    "剪贴板内容解码失败（应为 Base64）",
                     cx,
                 );
                 return;
@@ -3788,7 +3828,7 @@ impl AgentPanel {
             Err(_) => {
                 Self::show_deferred_toast(
                     &self.workspace,
-                    "Failed to parse thread data from clipboard",
+                    "无法解析剪贴板中的会话数据",
                     cx,
                 );
                 return;
@@ -3819,7 +3859,7 @@ impl AgentPanel {
                         workspace.show_toast(
                             workspace::Toast::new(
                                 workspace::notifications::NotificationId::unique::<ThreadLoadedToast>(),
-                                "Thread loaded from clipboard",
+                                "已从剪贴板加载会话",
                             )
                             .autohide(),
                             cx,
@@ -3840,23 +3880,23 @@ impl AgentPanel {
         cx: &mut Context<Self>,
     ) {
         let Some(thread_id) = self.active_thread_id(cx) else {
-            Self::show_deferred_toast(&self.workspace, "No active thread", cx);
+            Self::show_deferred_toast(&self.workspace, "没有活动会话", cx);
             return;
         };
 
         let Some(store) = ThreadMetadataStore::try_global(cx) else {
-            Self::show_deferred_toast(&self.workspace, "Thread metadata store not available", cx);
+            Self::show_deferred_toast(&self.workspace, "会话元数据存储不可用", cx);
             return;
         };
 
         let Some(metadata) = store.read(cx).entry(thread_id).cloned() else {
-            Self::show_deferred_toast(&self.workspace, "No metadata found for active thread", cx);
+            Self::show_deferred_toast(&self.workspace, "未找到当前会话的元数据", cx);
             return;
         };
 
         let json = thread_metadata_to_debug_json(&metadata);
         let text = serde_json::to_string_pretty(&json).unwrap_or_default();
-        let title = format!("Thread Metadata: {}", metadata.display_title());
+        let title = format!("会话元数据：{}", metadata.display_title());
 
         self.open_json_buffer(title, text, window, cx);
     }
@@ -3868,7 +3908,7 @@ impl AgentPanel {
         cx: &mut Context<Self>,
     ) {
         let Some(store) = ThreadMetadataStore::try_global(cx) else {
-            Self::show_deferred_toast(&self.workspace, "Thread metadata store not available", cx);
+            Self::show_deferred_toast(&self.workspace, "会话元数据存储不可用", cx);
             return;
         };
 
@@ -3882,7 +3922,7 @@ impl AgentPanel {
         let json = serde_json::Value::Array(entries);
         let text = serde_json::to_string_pretty(&json).unwrap_or_default();
 
-        self.open_json_buffer("All Sidebar Thread Metadata".to_string(), text, window, cx);
+        self.open_json_buffer("所有侧边栏会话元数据".to_string(), text, window, cx);
     }
 
     fn open_json_buffer(
@@ -5081,7 +5121,7 @@ impl Panel for AgentPanel {
     }
 
     fn icon_tooltip(&self, _window: &Window, _cx: &App) -> Option<&'static str> {
-        Some("Agent Panel")
+        Some("智能体面板")
     }
 
     fn toggle_action(&self) -> Box<dyn Action> {
@@ -5436,7 +5476,7 @@ impl AgentPanel {
                                     IconButton::new("retry-thread-title", IconName::XCircle)
                                         .icon_color(Color::Error)
                                         .icon_size(IconSize::Small)
-                                        .tooltip(Tooltip::text("Title generation failed. Retry"))
+                                        .tooltip(Tooltip::text("标题生成失败。重试"))
                                         .on_click({
                                             let conversation_view = conversation_view.clone();
                                             let workspace = self.workspace.clone();
@@ -5499,13 +5539,13 @@ impl AgentPanel {
                             .into_any_element()
                     }
                 } else {
-                    Label::new("Terminal").into_any_element()
+                    Label::new("终端").into_any_element()
                 }
             }
             VisibleSurface::Configuration(_) => {
-                Label::new("Settings").truncate().into_any_element()
+                Label::new("设置").truncate().into_any_element()
             }
-            VisibleSurface::Uninitialized => Label::new("Agent").truncate().into_any_element(),
+            VisibleSurface::Uninitialized => Label::new("智能体").truncate().into_any_element(),
         };
 
         let toolbar_bg = cx.theme().colors().tab_bar_background;
@@ -5539,7 +5579,7 @@ impl AgentPanel {
                             .child(
                                 IconButton::new("edit_tile", IconName::Pencil)
                                     .icon_size(IconSize::Small)
-                                    .tooltip(Tooltip::text("Edit Thread Title")),
+                                    .tooltip(Tooltip::text("编辑会话标题")),
                             ),
                     )
             })
@@ -5549,7 +5589,7 @@ impl AgentPanel {
     fn show_no_thread_summary_model_toast(workspace: Entity<Workspace>, cx: &mut App) {
         workspace.update(cx, |workspace, cx| {
             let toast = StatusToast::new(
-                "No model is configured for summarizing thread titles.",
+                "未配置用于总结会话标题的模型。",
                 cx,
                 |this, _cx| {
                     this.icon(
@@ -5637,7 +5677,7 @@ impl AgentPanel {
                     .icon_size(IconSize::Small),
                 move |_window, cx| {
                     Tooltip::for_action_in(
-                        "Toggle Agent Menu",
+                        "切换智能体菜单",
                         &ToggleOptionsMenu,
                         &focus_handle,
                         cx,
@@ -5652,11 +5692,11 @@ impl AgentPanel {
                         menu = menu.context(menu_action_context.clone());
 
                         if can_regenerate_thread_title {
-                            menu = menu.header("Current Thread");
+                            menu = menu.header("当前会话");
 
                             if let Some(conversation_view) = conversation_view.as_ref() {
                                 menu = menu
-                                    .entry("Regenerate Thread Title", None, {
+                                    .entry("重新生成会话标题", None, {
                                         let conversation_view = conversation_view.clone();
                                         let workspace = workspace.clone();
                                         move |_, cx| {
@@ -5673,10 +5713,11 @@ impl AgentPanel {
 
                         if !showing_terminal {
                             menu = menu
-                                .header("MCP Servers")
-                                .action("Add Custom Server…", Box::new(AddContextServer))
+                                .header("MCP 服务器")
+                                .action("添加自定义服务器…", Box::new(AddContextServer::local()))
+                                .action("添加远程服务器…", Box::new(AddContextServer::remote()))
                                 .action(
-                                    "Install New Servers…",
+                                    "安装新服务器…",
                                     Box::new(zed_actions::Extensions {
                                         category_filter: Some(
                                             zed_actions::ExtensionCategoryFilter::ContextServers,
@@ -5685,8 +5726,8 @@ impl AgentPanel {
                                     }),
                                 )
                                 .separator()
-                                .header("Context")
-                                .action("Skills", Box::new(ManageSkills));
+                                .header("上下文")
+                                .action("技能", Box::new(ManageSkills));
 
                             if project_agents_md_path.is_some() || global_agents_md_loaded {
                                 if global_agents_md_loaded {
@@ -5697,7 +5738,7 @@ impl AgentPanel {
                                             h_flex()
                                                 .w_full()
                                                 .gap_1()
-                                                .child(Label::new("Open Global Rules"))
+                                                .child(Label::new("打开全局规则"))
                                                 .child(
                                                     Label::new("(AGENTS.md)")
                                                         .color(Color::Muted)
@@ -5722,7 +5763,7 @@ impl AgentPanel {
                                             h_flex()
                                                 .w_full()
                                                 .gap_1()
-                                                .child(Label::new("Open Project Rules"))
+                                                .child(Label::new("打开项目规则"))
                                                 .child(
                                                     Label::new("(AGENTS.md)")
                                                         .color(Color::Muted)
@@ -5743,22 +5784,22 @@ impl AgentPanel {
                                 menu = menu.separator();
                             }
 
-                            menu = menu.action("Profiles", Box::new(ManageProfiles::default()));
+                            menu = menu.action("配置文件", Box::new(ManageProfiles::default()));
                         }
 
                         menu = menu
-                            .action("Settings", Box::new(OpenSettings))
+                            .action("设置", Box::new(OpenSettings))
                             .separator()
-                            .action("Toggle Threads Sidebar", Box::new(ToggleWorkspaceSidebar));
+                            .action("切换会话侧边栏", Box::new(ToggleWorkspaceSidebar));
 
                         if has_auth_methods || supports_logout {
                             menu = menu.separator()
                         }
                         if has_auth_methods {
-                            menu = menu.action("Reauthenticate", Box::new(ReauthenticateAgent))
+                            menu = menu.action("重新认证", Box::new(ReauthenticateAgent))
                         }
                         if supports_logout {
-                            menu = menu.action("Log Out", Box::new(LogoutAgent))
+                            menu = menu.action("退出登录", Box::new(LogoutAgent))
                         }
 
                         menu
@@ -5777,7 +5818,7 @@ impl AgentPanel {
             }))
             .tooltip({
                 move |_window, cx| {
-                    Tooltip::for_action_in("Go Back", &workspace::GoBack, &focus_handle, cx)
+                    Tooltip::for_action_in("返回", &workspace::GoBack, &focus_handle, cx)
                 }
             })
     }
@@ -5786,7 +5827,7 @@ impl AgentPanel {
         let focus_handle = self.focus_handle(cx);
 
         ProjectEmptyState::new(
-            "Agent Panel",
+            "智能体面板",
             focus_handle.clone(),
             KeyBinding::for_action_in(&workspace::Open::default(), &focus_handle, cx),
         )
@@ -5810,7 +5851,7 @@ impl AgentPanel {
         let showing_terminal = matches!(self.visible_surface(), VisibleSurface::Terminal(_));
 
         let (selected_agent_custom_icon, selected_agent_label) = if showing_terminal {
-            (None, SharedString::from("Terminal"))
+            (None, SharedString::from("终端"))
         } else if let Agent::Custom { id, .. } = &self.selected_agent {
             let store = agent_server_store.read(cx);
             let icon = store.agent_icon(&id);
@@ -5856,7 +5897,7 @@ impl AgentPanel {
                             if !thread.is_empty() {
                                 let session_id = thread.id().clone();
                                 this.item(
-                                    ContextMenuEntry::new("New From Summary")
+                                    ContextMenuEntry::new("从摘要新建")
                                         .icon(IconName::ThreadFromSummary)
                                         .icon_color(Color::Muted)
                                         .handler(move |window, cx| {
@@ -5873,7 +5914,7 @@ impl AgentPanel {
                             }
                         })
                         .item(
-                            ContextMenuEntry::new("Zed Agent")
+                            ContextMenuEntry::new("Zed 智能体")
                                 .when(
                                     !showing_terminal && is_agent_selected(Agent::NativeAgent),
                                     |this| this.action(Box::new(NewThread)),
@@ -5905,7 +5946,7 @@ impl AgentPanel {
                         )
                         .when(supports_terminal, |menu| {
                             menu.item(
-                                ContextMenuEntry::new("Terminal")
+                                ContextMenuEntry::new("终端")
                                     .when(showing_terminal, |this| this.action(Box::new(NewThread)))
                                     .when(!showing_terminal, |this| {
                                         this.action(Box::new(NewTerminalThread))
@@ -5966,7 +6007,7 @@ impl AgentPanel {
                                 .collect::<Vec<_>>();
 
                             if !agent_items.is_empty() {
-                                menu = menu.separator().header("External Agents");
+                                menu = menu.separator().header("外部智能体");
                             }
                             for item in &agent_items {
                                 let mut entry = ContextMenuEntry::new(item.display_name.clone());
@@ -6026,7 +6067,7 @@ impl AgentPanel {
                         })
                         .separator()
                         .item(
-                            ContextMenuEntry::new("Add More Agents")
+                            ContextMenuEntry::new("添加更多智能体")
                                 .icon(IconName::Plus)
                                 .icon_color(Color::Muted)
                                 .handler({
@@ -6072,7 +6113,7 @@ impl AgentPanel {
                 Tooltip::with_meta(
                     selected_agent_label_for_tooltip.clone(),
                     None,
-                    "Selected Agent",
+                    "当前智能体",
                     cx,
                 )
             });
@@ -6113,13 +6154,13 @@ impl AgentPanel {
             (
                 "disable-full-screen",
                 IconName::Minimize,
-                "Disable Full Screen",
+                "退出全屏",
             )
         } else {
             (
                 "enable-full-screen",
                 IconName::Maximize,
-                "Enable Full Screen",
+                "全屏",
             )
         };
         let full_screen_button = IconButton::new(icon_id, icon_name)
@@ -6141,7 +6182,7 @@ impl AgentPanel {
             .justify_between();
 
         let empty_thread_title = matches!(mode, ToolbarMode::EmptyThread).then(|| {
-            Label::new(format!("New {} Thread", selected_agent_label))
+            Label::new(format!("新建{}会话", selected_agent_label))
                 .color(Color::Muted)
                 .truncate()
                 .into_any_element()
@@ -6155,7 +6196,7 @@ impl AgentPanel {
                     {
                         move |_window, cx| {
                             Tooltip::for_action_in(
-                                "New Thread\u{2026}",
+                                "新建会话\u{2026}",
                                 &ToggleNewThreadMenu,
                                 &focus_handle,
                                 cx,
@@ -7497,15 +7538,12 @@ mod tests {
         cx.executor().allow_parking();
         cx.update(|_, cx| {
             let mut settings = AgentSettings::get_global(cx).clone();
-            // The output (`init_ran_42`) is distinct from the command text
-            // (`init_ran_$((6*7))`), which the PTY also echoes back. Finding the
-            // output therefore proves the shell actually executed the command
-            // rather than merely echoing the keystrokes.
-            settings.terminal_init_command = Some("echo init_ran_$((6*7))".to_string());
+            // `init_ran_42` is the command's output, not its echoed text, so finding
+            // it proves the shell executed the command rather than just echoing it.
+            settings.terminal_init_command = Some("printf 'init_ran_%s\\n' 42".to_string());
             AgentSettings::override_global(settings, cx);
 
-            // Force a POSIX shell rather than relying on the developer's login
-            // shell, which may not support `$((...))` arithmetic (e.g. fish).
+            // Force a known POSIX shell so the test doesn't depend on the developer's login shell.
             let mut terminal_settings = TerminalSettings::get_global(cx).clone();
             terminal_settings.shell = task::Shell::Program("/bin/sh".to_string());
             TerminalSettings::override_global(terminal_settings, cx);
@@ -7535,6 +7573,7 @@ mod tests {
         // sleep, matching the real-PTY test in `acp_thread`.
         let deadline = Instant::now() + Duration::from_secs(10);
         let terminal = loop {
+            cx.run_until_parked();
             let terminal = panel.read_with(&cx, |panel, cx| {
                 panel
                     .terminals
@@ -7548,13 +7587,29 @@ mod tests {
             {
                 break terminal.clone();
             }
-            assert!(
-                Instant::now() < deadline,
-                "init command output never appeared in the terminal"
-            );
+            if Instant::now() >= deadline {
+                let terminal_created = terminal.is_some();
+                let (content, input_log) = if let Some(terminal) = terminal {
+                    let content = terminal.read_with(&cx, |terminal, _| terminal.get_content());
+                    let input_log =
+                        terminal.update(&mut cx, |terminal, _| terminal.take_input_log());
+                    (content, input_log)
+                } else {
+                    (String::new(), Vec::new())
+                };
+                panic!(
+                    "init command output never appeared in the terminal; terminal_created={terminal_created}, content={content:?}, input_log={input_log:?}"
+                );
+            }
             cx.executor().timer(Duration::from_millis(50)).await;
         };
 
+        let input_log = terminal.update(&mut cx, |terminal, _| terminal.take_input_log());
+        assert_eq!(
+            input_log,
+            vec![b"printf 'init_ran_%s\\n' 42\r".to_vec()],
+            "init command should be written only after terminal startup has settled"
+        );
         assert!(
             !terminal.read_with(&cx, |terminal, _| terminal.keyboard_input_sent()),
             "writing the init command must not mark the terminal as having received \
@@ -10954,6 +11009,7 @@ mod tests {
             draft_prompt: None,
             ui_scroll_position: None,
             sandboxed_terminal_temp_dir: None,
+            sandbox_grants: Default::default(),
         };
 
         let thread_store = cx.update(|cx| ThreadStore::global(cx));
