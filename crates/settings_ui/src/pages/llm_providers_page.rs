@@ -107,7 +107,7 @@ fn render_configure_button(
     let provider_id = provider_id.clone();
     Button::new(
         SharedString::from(format!("configure-{}", provider_id.0)),
-        "Configure",
+        "配置",
     )
     .style(ButtonStyle::Outlined)
     .label_size(LabelSize::Small)
@@ -133,7 +133,7 @@ fn open_provider_configuration(
 
     settings_window.push_dynamic_sub_page(
         title,
-        "Agent Configuration",
+        "智能体配置",
         Some("llm_providers"),
         false,
         render_provider_config_sub_page,
