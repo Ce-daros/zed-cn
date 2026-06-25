@@ -62,6 +62,7 @@ const RESOURCES: &[LocaleResource] = &[
 
 static ACTIVE_LOCALE: OnceLock<RwLock<String>> = OnceLock::new();
 static CATALOGS: OnceLock<BTreeMap<&'static str, BTreeMap<String, String>>> = OnceLock::new();
+static INTERNED_TEXT: OnceLock<RwLock<BTreeMap<(String, String), &'static str>>> = OnceLock::new();
 
 pub fn set_locale(locale: impl AsRef<str>) {
     *active_locale().write() = canonical_locale(locale.as_ref());
@@ -96,6 +97,20 @@ pub fn text_args(key: &str, args: &[(&str, &str)]) -> String {
     text_args_for_locale(&locale(), key, args)
 }
 
+pub fn static_text(key: &str) -> &'static str {
+    let locale = locale();
+    let intern_key = (locale.clone(), key.to_string());
+
+    if let Some(value) = interned_text().read().get(&intern_key).copied() {
+        return value;
+    }
+
+    let value = text_for_locale(&locale, key).into_boxed_str();
+    let value = Box::leak(value);
+    interned_text().write().insert(intern_key, value);
+    value
+}
+
 fn text_for_locale(locale: &str, key: &str) -> String {
     for candidate in locale_candidates(locale) {
         if let Some(value) = catalogs()
@@ -121,6 +136,10 @@ fn text_args_for_locale(locale: &str, key: &str, args: &[(&str, &str)]) -> Strin
     }
 
     value
+}
+
+fn interned_text() -> &'static RwLock<BTreeMap<(String, String), &'static str>> {
+    INTERNED_TEXT.get_or_init(Default::default)
 }
 
 fn active_locale() -> &'static RwLock<String> {

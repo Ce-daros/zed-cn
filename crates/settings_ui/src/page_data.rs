@@ -89,9 +89,11 @@ fn developer_page(cx: &App) -> SettingsPage {
 
     // Feature flag overrides are a staff-only affordance, so only surface the section when the overrides are enabled.
     if cx.feature_flag_overrides_enabled() {
-        items.push(SettingsPageItem::SectionHeader("功能开关"));
+        items.push(SettingsPageItem::SectionHeader(localization::static_text(
+            "settings.developer.feature_flags.section",
+        )));
         items.push(SettingsPageItem::SubPageLink(SubPageLink {
-            title: "功能开关".into(),
+            title: localization::static_text("settings.developer.feature_flags.title").into(),
             r#type: Default::default(),
             description: None,
             json_path: Some("feature_flags"),
@@ -101,10 +103,14 @@ fn developer_page(cx: &App) -> SettingsPage {
         }));
     }
 
-    items.push(SettingsPageItem::SectionHeader("监测"));
+    items.push(SettingsPageItem::SectionHeader(localization::static_text(
+        "settings.developer.instrumentation.section",
+    )));
     items.push(SettingsPageItem::SettingItem(SettingItem {
-        title: "性能分析器",
-        description: "收集前台和后台执行器任务的计时数据，以便通过 `zed: open performance profiler` 查看。可能会增加内存使用。",
+        title: localization::static_text("settings.developer.performance_profiler.title"),
+        description: localization::static_text(
+            "settings.developer.performance_profiler.description",
+        ),
         field: Box::new(SettingField {
             organization_override: None,
             json_path: Some("instrumentation.performance_profiler.enabled"),
@@ -129,7 +135,7 @@ fn developer_page(cx: &App) -> SettingsPage {
     }));
 
     SettingsPage {
-        title: "开发者",
+        title: localization::static_text("settings.developer.title"),
         items: items.into_boxed_slice(),
     }
 }
@@ -137,10 +143,16 @@ fn developer_page(cx: &App) -> SettingsPage {
 fn general_page(cx: &App) -> SettingsPage {
     fn general_settings_section(_cx: &App) -> Vec<SettingsPageItem> {
         vec![
-            SettingsPageItem::SectionHeader("常规设置"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.general.general_settings.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "无标签页时关闭",
-                description: "在没有标签页时使用“关闭当前项”操作时的处理方式。",
+                title: localization::static_text(
+                    "settings.general.when_closing_with_no_tabs.title",
+                ),
+                description: localization::static_text(
+                    "settings.general.when_closing_with_no_tabs.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("when_closing_with_no_tabs"),
@@ -158,8 +170,10 @@ fn general_page(cx: &App) -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "最后一个窗口关闭时",
-                description: "最后一个窗口关闭时的处理方式。",
+                title: localization::static_text("settings.general.on_last_window_closed.title"),
+                description: localization::static_text(
+                    "settings.general.on_last_window_closed.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("on_last_window_closed"),
@@ -174,8 +188,10 @@ fn general_page(cx: &App) -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "使用系统路径对话框",
-                description: "使用原生系统对话框执行“打开”和“另存为”。",
+                title: localization::static_text("settings.general.use_system_path_prompts.title"),
+                description: localization::static_text(
+                    "settings.general.use_system_path_prompts.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("use_system_path_prompts"),
@@ -190,8 +206,10 @@ fn general_page(cx: &App) -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "使用系统确认对话框",
-                description: "使用原生系统确认对话框。",
+                title: localization::static_text("settings.general.use_system_prompts.title"),
+                description: localization::static_text(
+                    "settings.general.use_system_prompts.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("use_system_prompts"),
@@ -204,8 +222,10 @@ fn general_page(cx: &App) -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "隐藏私有值",
-                description: "隐藏私有文件中的变量值。",
+                title: localization::static_text("settings.general.redact_private_values.title"),
+                description: localization::static_text(
+                    "settings.general.redact_private_values.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("redact_private_values"),
@@ -218,8 +238,10 @@ fn general_page(cx: &App) -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "私有文件",
-                description: "用于匹配文件路径以判断文件是否为私有文件的 glob。",
+                title: localization::static_text("settings.general.private_files.title"),
+                description: localization::static_text(
+                    "settings.general.private_files.description",
+                ),
                 field: Box::new(
                     SettingField {
                         organization_override: None,
@@ -237,8 +259,12 @@ fn general_page(cx: &App) -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "CLI 默认打开方式",
-                description: "当未指定参数时，`zed <path>` 打开目录的方式。",
+                title: localization::static_text(
+                    "settings.general.cli_default_open_behavior.title",
+                ),
+                description: localization::static_text(
+                    "settings.general.cli_default_open_behavior.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("cli_default_open_behavior"),
@@ -259,8 +285,10 @@ fn general_page(cx: &App) -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "默认打开方式",
-                description: "项目从界面打开时的默认方式。",
+                title: localization::static_text("settings.general.default_open_behavior.title"),
+                description: localization::static_text(
+                    "settings.general.default_open_behavior.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("default_open_behavior"),
@@ -281,10 +309,14 @@ fn general_page(cx: &App) -> SettingsPage {
     }
     fn security_section() -> [SettingsPageItem; 2] {
         [
-            SettingsPageItem::SectionHeader("安全"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.general.security.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "默认信任所有项目",
-                description: "打开 Zed 时自动信任所有项目，避免进入受限模式，从而无需为每个新项目单独授权即可使用全部功能。",
+                title: localization::static_text("settings.general.trust_all_projects.title"),
+                description: localization::static_text(
+                    "settings.general.trust_all_projects.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("session.trust_all_projects"),
@@ -309,10 +341,14 @@ fn general_page(cx: &App) -> SettingsPage {
 
     fn workspace_restoration_section() -> [SettingsPageItem; 3] {
         [
-            SettingsPageItem::SectionHeader("工作区恢复"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.general.workspace_restoration.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "恢复未保存的缓冲区",
-                description: "是否在重启时恢复未保存的缓冲区。",
+                title: localization::static_text("settings.general.restore_unsaved_buffers.title"),
+                description: localization::static_text(
+                    "settings.general.restore_unsaved_buffers.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("session.restore_unsaved_buffers"),
@@ -333,8 +369,10 @@ fn general_page(cx: &App) -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "启动时恢复",
-                description: "打开 Zed 时要从上次会话恢复哪些内容。",
+                title: localization::static_text("settings.general.restore_on_startup.title"),
+                description: localization::static_text(
+                    "settings.general.restore_on_startup.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("restore_on_startup"),
@@ -351,11 +389,15 @@ fn general_page(cx: &App) -> SettingsPage {
 
     fn scoped_settings_section() -> [SettingsPageItem; 3] {
         [
-            SettingsPageItem::SectionHeader("范围设置"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.general.scope_settings.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
                 files: USER,
-                title: "预览通道",
-                description: "哪些设置仅在 Zed Preview 构建中生效。",
+                title: localization::static_text("settings.general.preview_channel.title"),
+                description: localization::static_text(
+                    "settings.general.preview_channel.description",
+                ),
                 field: Box::new(
                     SettingField {
                         organization_override: None,
@@ -369,8 +411,10 @@ fn general_page(cx: &App) -> SettingsPage {
             }),
             SettingsPageItem::SettingItem(SettingItem {
                 files: USER,
-                title: "设置配置文件",
-                description: "可临时叠加到现有用户设置上的任意数量设置配置文件。",
+                title: localization::static_text("settings.general.settings_profiles.title"),
+                description: localization::static_text(
+                    "settings.general.settings_profiles.description",
+                ),
                 field: Box::new(
                     SettingField {
                         organization_override: None,
@@ -387,10 +431,14 @@ fn general_page(cx: &App) -> SettingsPage {
 
     fn privacy_section() -> [SettingsPageItem; 4] {
         [
-            SettingsPageItem::SectionHeader("隐私"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.general.privacy.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "遥测诊断",
-                description: "发送崩溃报告等调试信息。",
+                title: localization::static_text("settings.general.telemetry_diagnostics.title"),
+                description: localization::static_text(
+                    "settings.general.telemetry_diagnostics.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("telemetry.diagnostics"),
@@ -411,8 +459,10 @@ fn general_page(cx: &App) -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "遥测指标",
-                description: "发送匿名使用数据，例如你在 Zed 中使用了哪些语言。",
+                title: localization::static_text("settings.general.telemetry_metrics.title"),
+                description: localization::static_text(
+                    "settings.general.telemetry_metrics.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("telemetry.metrics"),
@@ -430,8 +480,10 @@ fn general_page(cx: &App) -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "Anthropic 数据保留",
-                description: "允许向无法提供零数据保留的 Anthropic 模型发送请求。",
+                title: localization::static_text("settings.general.anthropic_data_retention.title"),
+                description: localization::static_text(
+                    "settings.general.anthropic_data_retention.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("telemetry.anthropic_retention"),
@@ -456,10 +508,12 @@ fn general_page(cx: &App) -> SettingsPage {
 
     fn auto_update_section() -> [SettingsPageItem; 2] {
         [
-            SettingsPageItem::SectionHeader("自动更新"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.general.auto_update.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "自动更新",
-                description: "是否自动检查更新。",
+                title: localization::static_text("settings.general.auto_update.title"),
+                description: localization::static_text("settings.general.auto_update.description"),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("auto_update"),
@@ -475,7 +529,7 @@ fn general_page(cx: &App) -> SettingsPage {
     }
 
     SettingsPage {
-        title: "常规",
+        title: localization::static_text("settings.general.title"),
         items: concat_sections!(
             @vec,
             general_settings_section(cx),
@@ -4072,47 +4126,48 @@ fn window_and_layout_page() -> SettingsPage {
                 metadata: None,
                 files: USER,
             }),
-            SettingsPageItem::DynamicItem(DynamicItem {
-                discriminant: SettingItem {
-                    files: USER,
-                    title: "按钮 布局",
-                    description:
-                        "（仅限 Linux）选择窗口控制按钮在标题栏中的排列方式。",
-                    field: Box::new(SettingField {
-                        organization_override: None,
-                        json_path: Some("title_bar.button_layout$"),
-                        pick: |settings_content| {
-                            Some(
-                                &dynamic_variants::<settings::WindowButtonLayoutContent>()[settings_content
-                                    .title_bar
-                                    .as_ref()?
-                                    .button_layout
-                                    .as_ref()?
-                                    .discriminant()
-                                    as usize],
-                            )
-                        },
-                        write: |settings_content, value, _| {
-                            let Some(value) = value else {
-                                settings_content
-                                    .title_bar
-                                    .get_or_insert_default()
-                                    .button_layout = None;
-                                return;
-                            };
+            SettingsPageItem::DynamicItem(
+                DynamicItem {
+                    discriminant: SettingItem {
+                        files: USER,
+                        title: "按钮 布局",
+                        description: "（仅限 Linux）选择窗口控制按钮在标题栏中的排列方式。",
+                        field: Box::new(SettingField {
+                            organization_override: None,
+                            json_path: Some("title_bar.button_layout$"),
+                            pick: |settings_content| {
+                                Some(
+                                    &dynamic_variants::<settings::WindowButtonLayoutContent>()
+                                        [settings_content
+                                            .title_bar
+                                            .as_ref()?
+                                            .button_layout
+                                            .as_ref()?
+                                            .discriminant()
+                                            as usize],
+                                )
+                            },
+                            write: |settings_content, value, _| {
+                                let Some(value) = value else {
+                                    settings_content
+                                        .title_bar
+                                        .get_or_insert_default()
+                                        .button_layout = None;
+                                    return;
+                                };
 
-                            let current_custom_layout = settings_content
-                                .title_bar
-                                .as_ref()
-                                .and_then(|title_bar| title_bar.button_layout.as_ref())
-                                .and_then(|button_layout| match button_layout {
-                                    settings::WindowButtonLayoutContent::Custom(layout) => {
-                                        Some(layout.clone())
-                                    }
-                                    _ => None,
-                                });
+                                let current_custom_layout = settings_content
+                                    .title_bar
+                                    .as_ref()
+                                    .and_then(|title_bar| title_bar.button_layout.as_ref())
+                                    .and_then(|button_layout| match button_layout {
+                                        settings::WindowButtonLayoutContent::Custom(layout) => {
+                                            Some(layout.clone())
+                                        }
+                                        _ => None,
+                                    });
 
-                            let button_layout = match value {
+                                let button_layout = match value {
                                 settings::WindowButtonLayoutContentDiscriminants::PlatformDefault => {
                                     settings::WindowButtonLayoutContent::PlatformDefault
                                 }
@@ -4128,27 +4183,29 @@ fn window_and_layout_page() -> SettingsPage {
                                 }
                             };
 
+                                settings_content
+                                    .title_bar
+                                    .get_or_insert_default()
+                                    .button_layout = Some(button_layout);
+                            },
+                        }),
+                        metadata: None,
+                    },
+                    pick_discriminant: |settings_content| {
+                        Some(
                             settings_content
                                 .title_bar
-                                .get_or_insert_default()
-                                .button_layout = Some(button_layout);
-                        },
-                    }),
-                    metadata: None,
-                },
-                pick_discriminant: |settings_content| {
-                    Some(
-                        settings_content
-                            .title_bar
-                            .as_ref()?
-                            .button_layout
-                            .as_ref()?
-                            .discriminant() as usize,
-                    )
-                },
-                fields: dynamic_variants::<settings::WindowButtonLayoutContent>()
-                    .into_iter()
-                    .map(|variant| match variant {
+                                .as_ref()?
+                                .button_layout
+                                .as_ref()?
+                                .discriminant() as usize,
+                        )
+                    },
+                    fields:
+                        dynamic_variants::<settings::WindowButtonLayoutContent>()
+                            .into_iter()
+                            .map(|variant| {
+                                match variant {
                         settings::WindowButtonLayoutContentDiscriminants::PlatformDefault => {
                             vec![]
                         }
@@ -4187,9 +4244,11 @@ fn window_and_layout_page() -> SettingsPage {
                                 })),
                             },
                         ],
-                    })
-                    .collect(),
-            }),
+                    }
+                            })
+                            .collect(),
+                },
+            ),
         ]
     }
 
@@ -6458,100 +6517,150 @@ fn debugger_page() -> SettingsPage {
 fn terminal_page() -> SettingsPage {
     fn environment_section() -> [SettingsPageItem; 5] {
         [
-                SettingsPageItem::SectionHeader("环境"),
-                SettingsPageItem::DynamicItem(DynamicItem {
-                    discriminant: SettingItem {
-                        files: USER | PROJECT,
-                        title: "Shell",
-                        description: "打开终端时使用的 shell。",
-                        field: Box::new(SettingField {
-                            organization_override: None,
-                            json_path: Some("terminal.shell$"),
-                            pick: |settings_content| {
-                                Some(&dynamic_variants::<settings::Shell>()[
-                                    settings_content
-                                        .terminal
-                                        .as_ref()?
-                                        .project
-                                        .shell
-                                        .as_ref()?
-                                        .discriminant() as usize
-                                ])
-                            },
-                            write: |settings_content, value, _| {
-                                let Some(value) = value else {
-                                    if let Some(terminal) = settings_content.terminal.as_mut() {
-                                        terminal.project.shell = None;
-                                    }
-                                    return;
-                                };
-                                let settings_value = settings_content
+            SettingsPageItem::SectionHeader("环境"),
+            SettingsPageItem::DynamicItem(DynamicItem {
+                discriminant: SettingItem {
+                    files: USER | PROJECT,
+                    title: "Shell",
+                    description: "打开终端时使用的 shell。",
+                    field: Box::new(SettingField {
+                        organization_override: None,
+                        json_path: Some("terminal.shell$"),
+                        pick: |settings_content| {
+                            Some(
+                                &dynamic_variants::<settings::Shell>()[settings_content
                                     .terminal
-                                    .get_or_insert_default()
+                                    .as_ref()?
                                     .project
                                     .shell
-                                    .get_or_insert_with(|| settings::Shell::default());
-                                let default_shell = if cfg!(target_os = "windows") {
-                                    "powershell.exe"
-                                } else {
-                                    "sh"
-                                };
-                                *settings_value = match value {
-                                    settings::ShellDiscriminants::System => settings::Shell::System,
-                                    settings::ShellDiscriminants::Program => {
-                                        let program = match settings_value {
-                                            settings::Shell::Program(program) => program.clone(),
-                                            settings::Shell::WithArguments { program, .. } => program.clone(),
-                                            _ => String::from(default_shell),
-                                        };
-                                        settings::Shell::Program(program)
-                                    }
-                                    settings::ShellDiscriminants::WithArguments => {
-                                        let (program, args, title_override) = match settings_value {
-                                            settings::Shell::Program(program) => (program.clone(), vec![], None),
-                                            settings::Shell::WithArguments {
-                                                program,
-                                                args,
-                                                title_override,
-                                            } => (program.clone(), args.clone(), title_override.clone()),
-                                            _ => (String::from(default_shell), vec![], None),
-                                        };
+                                    .as_ref()?
+                                    .discriminant()
+                                    as usize],
+                            )
+                        },
+                        write: |settings_content, value, _| {
+                            let Some(value) = value else {
+                                if let Some(terminal) = settings_content.terminal.as_mut() {
+                                    terminal.project.shell = None;
+                                }
+                                return;
+                            };
+                            let settings_value = settings_content
+                                .terminal
+                                .get_or_insert_default()
+                                .project
+                                .shell
+                                .get_or_insert_with(|| settings::Shell::default());
+                            let default_shell = if cfg!(target_os = "windows") {
+                                "powershell.exe"
+                            } else {
+                                "sh"
+                            };
+                            *settings_value = match value {
+                                settings::ShellDiscriminants::System => settings::Shell::System,
+                                settings::ShellDiscriminants::Program => {
+                                    let program = match settings_value {
+                                        settings::Shell::Program(program) => program.clone(),
+                                        settings::Shell::WithArguments { program, .. } => {
+                                            program.clone()
+                                        }
+                                        _ => String::from(default_shell),
+                                    };
+                                    settings::Shell::Program(program)
+                                }
+                                settings::ShellDiscriminants::WithArguments => {
+                                    let (program, args, title_override) = match settings_value {
+                                        settings::Shell::Program(program) => {
+                                            (program.clone(), vec![], None)
+                                        }
                                         settings::Shell::WithArguments {
                                             program,
                                             args,
                                             title_override,
+                                        } => {
+                                            (program.clone(), args.clone(), title_override.clone())
                                         }
+                                        _ => (String::from(default_shell), vec![], None),
+                                    };
+                                    settings::Shell::WithArguments {
+                                        program,
+                                        args,
+                                        title_override,
                                     }
-                                };
-                            },
-                        }),
-                        metadata: None,
-                    },
-                    pick_discriminant: |settings_content| {
-                        Some(
-                            settings_content
-                                .terminal
-                                .as_ref()?
-                                .project
-                                .shell
-                                .as_ref()?
-                                .discriminant() as usize,
-                        )
-                    },
-                    fields: dynamic_variants::<settings::Shell>()
-                        .into_iter()
-                        .map(|variant| match variant {
-                            settings::ShellDiscriminants::System => vec![],
-                            settings::ShellDiscriminants::Program => vec![SettingItem {
+                                }
+                            };
+                        },
+                    }),
+                    metadata: None,
+                },
+                pick_discriminant: |settings_content| {
+                    Some(
+                        settings_content
+                            .terminal
+                            .as_ref()?
+                            .project
+                            .shell
+                            .as_ref()?
+                            .discriminant() as usize,
+                    )
+                },
+                fields: dynamic_variants::<settings::Shell>()
+                    .into_iter()
+                    .map(|variant| match variant {
+                        settings::ShellDiscriminants::System => vec![],
+                        settings::ShellDiscriminants::Program => vec![SettingItem {
+                            files: USER | PROJECT,
+                            title: "程序",
+                            description: "要使用的 shell 程序。",
+                            field: Box::new(SettingField {
+                                organization_override: None,
+                                json_path: Some("terminal.shell"),
+                                pick: |settings_content| match settings_content
+                                    .terminal
+                                    .as_ref()?
+                                    .project
+                                    .shell
+                                    .as_ref()
+                                {
+                                    Some(settings::Shell::Program(program)) => Some(program),
+                                    _ => None,
+                                },
+                                write: |settings_content, value, _| {
+                                    let Some(value) = value else {
+                                        return;
+                                    };
+                                    match settings_content
+                                        .terminal
+                                        .get_or_insert_default()
+                                        .project
+                                        .shell
+                                        .as_mut()
+                                    {
+                                        Some(settings::Shell::Program(program)) => *program = value,
+                                        _ => return,
+                                    }
+                                },
+                            }),
+                            metadata: None,
+                        }],
+                        settings::ShellDiscriminants::WithArguments => vec![
+                            SettingItem {
                                 files: USER | PROJECT,
                                 title: "程序",
-                                description: "要使用的 shell 程序。",
+                                description: "要运行的 shell 程序。",
                                 field: Box::new(SettingField {
                                     organization_override: None,
-                                    json_path: Some("terminal.shell"),
-                                    pick: |settings_content| match settings_content.terminal.as_ref()?.project.shell.as_ref()
+                                    json_path: Some("terminal.shell.program"),
+                                    pick: |settings_content| match settings_content
+                                        .terminal
+                                        .as_ref()?
+                                        .project
+                                        .shell
+                                        .as_ref()
                                     {
-                                        Some(settings::Shell::Program(program)) => Some(program),
+                                        Some(settings::Shell::WithArguments {
+                                            program, ..
+                                        }) => Some(program),
                                         _ => None,
                                     },
                                     write: |settings_content, value, _| {
@@ -6565,26 +6674,35 @@ fn terminal_page() -> SettingsPage {
                                             .shell
                                             .as_mut()
                                         {
-                                            Some(settings::Shell::Program(program)) => *program = value,
+                                            Some(settings::Shell::WithArguments {
+                                                program,
+                                                ..
+                                            }) => *program = value,
                                             _ => return,
                                         }
                                     },
                                 }),
                                 metadata: None,
-                            }],
-                            settings::ShellDiscriminants::WithArguments => vec![
-                                SettingItem {
-                                    files: USER | PROJECT,
-                                    title: "程序",
-                                    description: "要运行的 shell 程序。",
-                                    field: Box::new(SettingField {
+                            },
+                            SettingItem {
+                                files: USER | PROJECT,
+                                title: "参数",
+                                description: "传给 shell 程序的参数。",
+                                field: Box::new(
+                                    SettingField {
                                         organization_override: None,
-                                        json_path: Some("terminal.shell.program"),
-                                        pick: |settings_content| {
-                                            match settings_content.terminal.as_ref()?.project.shell.as_ref() {
-                                                Some(settings::Shell::WithArguments { program, .. }) => Some(program),
-                                                _ => None,
-                                            }
+                                        json_path: Some("terminal.shell.args"),
+                                        pick: |settings_content| match settings_content
+                                            .terminal
+                                            .as_ref()?
+                                            .project
+                                            .shell
+                                            .as_ref()
+                                        {
+                                            Some(settings::Shell::WithArguments {
+                                                args, ..
+                                            }) => Some(args),
+                                            _ => None,
                                         },
                                         write: |settings_content, value, _| {
                                             let Some(value) = value else {
@@ -6597,118 +6715,94 @@ fn terminal_page() -> SettingsPage {
                                                 .shell
                                                 .as_mut()
                                             {
-                                                Some(settings::Shell::WithArguments { program, .. }) => {
-                                                    *program = value
-                                                }
+                                                Some(settings::Shell::WithArguments {
+                                                    args,
+                                                    ..
+                                                }) => *args = value,
                                                 _ => return,
                                             }
                                         },
-                                    }),
-                                    metadata: None,
-                                },
-                                SettingItem {
-                                    files: USER | PROJECT,
-                                    title: "参数",
-                                    description: "传给 shell 程序的参数。",
-                                    field: Box::new(
-                                        SettingField {
-                                            organization_override: None,
-                                            json_path: Some("terminal.shell.args"),
-                                            pick: |settings_content| {
-                                                match settings_content.terminal.as_ref()?.project.shell.as_ref() {
-                                                    Some(settings::Shell::WithArguments { args, .. }) => Some(args),
-                                                    _ => None,
-                                                }
-                                            },
-                                            write: |settings_content, value, _| {
-                                                let Some(value) = value else {
-                                                    return;
-                                                };
-                                                match settings_content
-                                                    .terminal
-                                                    .get_or_insert_default()
-                                                    .project
-                                                    .shell
-                                                    .as_mut()
-                                                {
-                                                    Some(settings::Shell::WithArguments { args, .. }) => *args = value,
-                                                    _ => return,
-                                                }
-                                            },
-                                        }
-                                        .unimplemented(),
-                                    ),
-                                    metadata: None,
-                                },
-                                SettingItem {
-                                    files: USER | PROJECT,
-                                    title: "标题覆盖",
-                                    description: "可选字符串，用来覆盖终端标签页标题。",
-                                    field: Box::new(SettingField {
-                                        organization_override: None,
-                                        json_path: Some("terminal.shell.title_override"),
-                                        pick: |settings_content| {
-                                            match settings_content.terminal.as_ref()?.project.shell.as_ref() {
-                                                Some(settings::Shell::WithArguments { title_override, .. }) => {
-                                                    title_override.as_ref().or(DEFAULT_EMPTY_STRING)
-                                                }
-                                                _ => None,
-                                            }
-                                        },
-                                        write: |settings_content, value, _| {
-                                            match settings_content
-                                                .terminal
-                                                .get_or_insert_default()
-                                                .project
-                                                .shell
-                                                .as_mut()
-                                            {
-                                                Some(settings::Shell::WithArguments { title_override, .. }) => {
-                                                    *title_override = value.filter(|s| !s.is_empty())
-                                                }
-                                                _ => return,
-                                            }
-                                        },
-                                    }),
-                                    metadata: None,
-                                },
-                            ],
-                        })
-                        .collect(),
-                }),
-                SettingsPageItem::DynamicItem(DynamicItem {
-                    discriminant: SettingItem {
-                        files: USER | PROJECT,
-                        title: "工作目录",
-                        description: "启动终端时使用的工作目录。",
-                        field: Box::new(SettingField {
-                            organization_override: None,
-                            json_path: Some("terminal.working_directory$"),
-                            pick: |settings_content| {
-                                Some(&dynamic_variants::<settings::WorkingDirectory>()[
-                                    settings_content
+                                    }
+                                    .unimplemented(),
+                                ),
+                                metadata: None,
+                            },
+                            SettingItem {
+                                files: USER | PROJECT,
+                                title: "标题覆盖",
+                                description: "可选字符串，用来覆盖终端标签页标题。",
+                                field: Box::new(SettingField {
+                                    organization_override: None,
+                                    json_path: Some("terminal.shell.title_override"),
+                                    pick: |settings_content| match settings_content
                                         .terminal
                                         .as_ref()?
                                         .project
-                                        .working_directory
-                                        .as_ref()?
-                                        .discriminant() as usize
-                                ])
+                                        .shell
+                                        .as_ref()
+                                    {
+                                        Some(settings::Shell::WithArguments {
+                                            title_override,
+                                            ..
+                                        }) => title_override.as_ref().or(DEFAULT_EMPTY_STRING),
+                                        _ => None,
+                                    },
+                                    write: |settings_content, value, _| match settings_content
+                                        .terminal
+                                        .get_or_insert_default()
+                                        .project
+                                        .shell
+                                        .as_mut()
+                                    {
+                                        Some(settings::Shell::WithArguments {
+                                            title_override,
+                                            ..
+                                        }) => *title_override = value.filter(|s| !s.is_empty()),
+                                        _ => return,
+                                    },
+                                }),
+                                metadata: None,
                             },
-                            write: |settings_content, value, _| {
-                                let Some(value) = value else {
-                                    if let Some(terminal) = settings_content.terminal.as_mut() {
-                                        terminal.project.working_directory = None;
-                                    }
-                                    return;
-                                };
-                                let settings_value = settings_content
+                        ],
+                    })
+                    .collect(),
+            }),
+            SettingsPageItem::DynamicItem(DynamicItem {
+                discriminant: SettingItem {
+                    files: USER | PROJECT,
+                    title: "工作目录",
+                    description: "启动终端时使用的工作目录。",
+                    field: Box::new(SettingField {
+                        organization_override: None,
+                        json_path: Some("terminal.working_directory$"),
+                        pick: |settings_content| {
+                            Some(
+                                &dynamic_variants::<settings::WorkingDirectory>()[settings_content
                                     .terminal
-                                    .get_or_insert_default()
+                                    .as_ref()?
                                     .project
                                     .working_directory
-                                    .get_or_insert_with(|| settings::WorkingDirectory::CurrentProjectDirectory);
-                                *settings_value = match value {
+                                    .as_ref()?
+                                    .discriminant()
+                                    as usize],
+                            )
+                        },
+                        write: |settings_content, value, _| {
+                            let Some(value) = value else {
+                                if let Some(terminal) = settings_content.terminal.as_mut() {
+                                    terminal.project.working_directory = None;
+                                }
+                                return;
+                            };
+                            let settings_value = settings_content
+                                .terminal
+                                .get_or_insert_default()
+                                .project
+                                .working_directory
+                                .get_or_insert_with(|| {
+                                    settings::WorkingDirectory::CurrentProjectDirectory
+                                });
+                            *settings_value = match value {
                                     settings::WorkingDirectoryDiscriminants::CurrentFileDirectory => {
                                         settings::WorkingDirectory::CurrentFileDirectory
                                     },
@@ -6729,99 +6823,120 @@ fn terminal_page() -> SettingsPage {
                                         settings::WorkingDirectory::Always { directory }
                                     }
                                 };
-                            },
-                        }),
-                        metadata: None,
-                    },
-                    pick_discriminant: |settings_content| {
-                        Some(
+                        },
+                    }),
+                    metadata: None,
+                },
+                pick_discriminant: |settings_content| {
+                    Some(
+                        settings_content
+                            .terminal
+                            .as_ref()?
+                            .project
+                            .working_directory
+                            .as_ref()?
+                            .discriminant() as usize,
+                    )
+                },
+                fields: dynamic_variants::<settings::WorkingDirectory>()
+                    .into_iter()
+                    .map(|variant| match variant {
+                        settings::WorkingDirectoryDiscriminants::CurrentFileDirectory => vec![],
+                        settings::WorkingDirectoryDiscriminants::CurrentProjectDirectory => vec![],
+                        settings::WorkingDirectoryDiscriminants::FirstProjectDirectory => vec![],
+                        settings::WorkingDirectoryDiscriminants::AlwaysHome => vec![],
+                        settings::WorkingDirectoryDiscriminants::Always => vec![SettingItem {
+                            files: USER | PROJECT,
+                            title: "目录",
+                            description: "要使用的目录路径，会经过 shell 展开。",
+                            field: Box::new(SettingField {
+                                organization_override: None,
+                                json_path: Some("terminal.working_directory.always"),
+                                pick: |settings_content| match settings_content
+                                    .terminal
+                                    .as_ref()?
+                                    .project
+                                    .working_directory
+                                    .as_ref()
+                                {
+                                    Some(settings::WorkingDirectory::Always { directory }) => {
+                                        Some(directory)
+                                    }
+                                    _ => None,
+                                },
+                                write: |settings_content, value, _| {
+                                    let value = value.unwrap_or_default();
+                                    match settings_content
+                                        .terminal
+                                        .get_or_insert_default()
+                                        .project
+                                        .working_directory
+                                        .as_mut()
+                                    {
+                                        Some(settings::WorkingDirectory::Always { directory }) => {
+                                            *directory = value
+                                        }
+                                        _ => return,
+                                    }
+                                },
+                            }),
+                            metadata: None,
+                        }],
+                    })
+                    .collect(),
+            }),
+            SettingsPageItem::SettingItem(SettingItem {
+                title: "环境变量",
+                description: "添加到终端环境中的键值对。",
+                field: Box::new(
+                    SettingField {
+                        organization_override: None,
+                        json_path: Some("terminal.env"),
+                        pick: |settings_content| {
+                            settings_content.terminal.as_ref()?.project.env.as_ref()
+                        },
+                        write: |settings_content, value, _| {
+                            settings_content
+                                .terminal
+                                .get_or_insert_default()
+                                .project
+                                .env = value;
+                        },
+                    }
+                    .unimplemented(),
+                ),
+                metadata: None,
+                files: USER | PROJECT,
+            }),
+            SettingsPageItem::SettingItem(SettingItem {
+                title: "检测虚拟环境",
+                description: "如果在终端工作目录中找到 Python 虚拟环境，则自动激活它。",
+                field: Box::new(
+                    SettingField {
+                        organization_override: None,
+                        json_path: Some("terminal.detect_venv"),
+                        pick: |settings_content| {
                             settings_content
                                 .terminal
                                 .as_ref()?
                                 .project
-                                .working_directory
-                                .as_ref()?
-                                .discriminant() as usize,
-                        )
-                    },
-                    fields: dynamic_variants::<settings::WorkingDirectory>()
-                        .into_iter()
-                        .map(|variant| match variant {
-                            settings::WorkingDirectoryDiscriminants::CurrentFileDirectory => vec![],
-                            settings::WorkingDirectoryDiscriminants::CurrentProjectDirectory => vec![],
-                            settings::WorkingDirectoryDiscriminants::FirstProjectDirectory => vec![],
-                            settings::WorkingDirectoryDiscriminants::AlwaysHome => vec![],
-                            settings::WorkingDirectoryDiscriminants::Always => vec![SettingItem {
-                                files: USER | PROJECT,
-                                title: "目录",
-                                description: "要使用的目录路径，会经过 shell 展开。",
-                                field: Box::new(SettingField {
-                                    organization_override: None,
-                                    json_path: Some("terminal.working_directory.always"),
-                                    pick: |settings_content| {
-                                        match settings_content.terminal.as_ref()?.project.working_directory.as_ref() {
-                                            Some(settings::WorkingDirectory::Always { directory }) => Some(directory),
-                                            _ => None,
-                                        }
-                                    },
-                                    write: |settings_content, value, _| {
-                                        let value = value.unwrap_or_default();
-                                        match settings_content
-                                            .terminal
-                                            .get_or_insert_default()
-                                            .project
-                                            .working_directory
-                                            .as_mut()
-                                        {
-                                            Some(settings::WorkingDirectory::Always { directory }) => *directory = value,
-                                            _ => return,
-                                        }
-                                    },
-                                }),
-                                metadata: None,
-                            }],
-                        })
-                        .collect(),
-                }),
-                SettingsPageItem::SettingItem(SettingItem {
-                    title: "环境变量",
-                    description: "添加到终端环境中的键值对。",
-                    field: Box::new(
-                        SettingField {
-                            organization_override: None,
-                            json_path: Some("terminal.env"),
-                            pick: |settings_content| settings_content.terminal.as_ref()?.project.env.as_ref(),
-                            write: |settings_content, value, _| {
-                                settings_content.terminal.get_or_insert_default().project.env = value;
-                            },
-                        }
-                        .unimplemented(),
-                    ),
-                    metadata: None,
-                    files: USER | PROJECT,
-                }),
-                SettingsPageItem::SettingItem(SettingItem {
-                    title: "检测虚拟环境",
-                    description: "如果在终端工作目录中找到 Python 虚拟环境，则自动激活它。",
-                    field: Box::new(
-                        SettingField {
-                            organization_override: None,
-                            json_path: Some("terminal.detect_venv"),
-                            pick: |settings_content| settings_content.terminal.as_ref()?.project.detect_venv.as_ref(),
-                            write: |settings_content, value, _| {
-                                settings_content
-                                    .terminal
-                                    .get_or_insert_default()
-                                    .project
-                                    .detect_venv = value;
-                            },
-                        }
-                        .unimplemented(),
-                    ),
-                    metadata: None,
-                    files: USER | PROJECT,
-                }),
-            ]
+                                .detect_venv
+                                .as_ref()
+                        },
+                        write: |settings_content, value, _| {
+                            settings_content
+                                .terminal
+                                .get_or_insert_default()
+                                .project
+                                .detect_venv = value;
+                        },
+                    }
+                    .unimplemented(),
+                ),
+                metadata: None,
+                files: USER | PROJECT,
+            }),
+        ]
     }
 
     fn font_section() -> [SettingsPageItem; 6] {
@@ -7905,10 +8020,7 @@ fn ai_page(cx: &App) -> SettingsPage {
                 title: "沙盒".into(),
                 r#type: Default::default(),
                 json_path: Some(zed_actions::AGENT_SANDBOX_SETTINGS_PATH),
-                description: Some(
-                    "查看和更改无需确认即可始终允许的提升终端沙箱权限。"
-                        .into(),
-                ),
+                description: Some("查看和更改无需确认即可始终允许的提升终端沙箱权限。".into()),
                 in_json: true,
                 files: USER,
                 render: render_sandbox_settings_page,
@@ -7917,7 +8029,9 @@ fn ai_page(cx: &App) -> SettingsPage {
                 title: "工具权限".into(),
                 r#type: Default::default(),
                 json_path: Some("agent.tool_permissions"),
-                description: Some("为特定工具输入设置自动允许、自动拒绝或始终请求确认的正则表达式。".into()),
+                description: Some(
+                    "为特定工具输入设置自动允许、自动拒绝或始终请求确认的正则表达式。".into(),
+                ),
                 in_json: true,
                 files: USER,
                 render: render_tool_permissions_setup_page,
@@ -7929,9 +8043,7 @@ fn ai_page(cx: &App) -> SettingsPage {
                 title: "MCP 服务器".into(),
                 r#type: Default::default(),
                 json_path: Some("context_servers"),
-                description: Some(
-                    "查看、添加、配置和移除模型上下文协议服务器。".into(),
-                ),
+                description: Some("查看、添加、配置和移除模型上下文协议服务器。".into()),
                 in_json: false,
                 files: USER,
                 render: render_mcp_servers_page,
@@ -7940,10 +8052,7 @@ fn ai_page(cx: &App) -> SettingsPage {
                 title: "外部代理".into(),
                 r#type: Default::default(),
                 json_path: Some("agent_servers"),
-                description: Some(
-                    "查看、添加和移除通过代理客户端协议连接的代理。"
-                        .into(),
-                ),
+                description: Some("查看、添加和移除通过代理客户端协议连接的代理。".into()),
                 in_json: false,
                 files: USER,
                 render: render_external_agents_page,
@@ -10256,14 +10365,15 @@ fn edit_prediction_language_settings_section() -> [SettingsPageItem; 5] {
             description: Some("设置不同的编辑预测提供商，作为 Zed 内置 Zeta 模型的补充。".into()),
             in_json: false,
             files: USER,
-            render: render_edit_prediction_setup_page
+            render: render_edit_prediction_setup_page,
         }),
         SettingsPageItem::SettingItem(SettingItem {
             title: "数据收集",
             description: "控制使用 Zed 编辑预测时是否允许收集训练数据。只有检测为开源项目中的文件才会被收集。默认值沿用之前通过状态栏开关设置的偏好；若没有保存偏好，则为 false。",
             field: Box::new(SettingField {
                 organization_override: Some(|org_settings| {
-                    const DATA_COLLECTION_DISABLED: EditPredictionDataCollectionChoice = EditPredictionDataCollectionChoice::No;
+                    const DATA_COLLECTION_DISABLED: EditPredictionDataCollectionChoice =
+                        EditPredictionDataCollectionChoice::No;
 
                     if !org_settings.edit_prediction.is_feedback_enabled {
                         Some(&DATA_COLLECTION_DISABLED)
