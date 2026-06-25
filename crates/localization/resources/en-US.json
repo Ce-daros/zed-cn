@@ -1,8 +1,15 @@
 {
+  "agent.notification.view": "View",
   "agent.thread.copied_context": "Copied {name}",
   "agent.thread.go_to_file": "Go to File",
+  "agent.toast.changes_rejected": "Agent Changes Rejected",
+  "agent.toast.undo": "Undo",
   "common.close": "Close",
+  "common.or": "or",
   "git.commit": "Commit",
   "git.stage_file": "Stage File",
-  "git.unstage_file": "Unstage File"
+  "git.unstage_file": "Unstage File",
+  "project.empty_state.clone_repo": "Clone Repository",
+  "project.empty_state.open_project": "Open Project",
+  "project.empty_state.prompt": "Select an option below to use {name}"
 }

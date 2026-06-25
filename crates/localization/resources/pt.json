@@ -1,0 +1,15 @@
+{
+  "agent.notification.view": "Ver",
+  "agent.thread.copied_context": "{name} copiado",
+  "agent.thread.go_to_file": "Ir para o arquivo",
+  "agent.toast.changes_rejected": "Alterações do agente rejeitadas",
+  "agent.toast.undo": "Desfazer",
+  "common.close": "Fechar",
+  "common.or": "ou",
+  "git.commit": "Commit",
+  "git.stage_file": "Preparar arquivo",
+  "git.unstage_file": "Remover do stage",
+  "project.empty_state.clone_repo": "Clonar repositório",
+  "project.empty_state.open_project": "Abrir projeto",
+  "project.empty_state.prompt": "Selecione uma opção abaixo para usar {name}"
+}

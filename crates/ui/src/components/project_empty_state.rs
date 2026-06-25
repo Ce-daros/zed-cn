@@ -47,7 +47,10 @@ impl ProjectEmptyState {
 impl RenderOnce for ProjectEmptyState {
     fn render(self, _window: &mut Window, _cx: &mut App) -> impl IntoElement {
         let id = format!("empty-state-{}", self.label);
-        let label = format!("选择下方任一选项以使用{}", self.label);
+        let label = localization::text_args(
+            "project.empty_state.prompt",
+            &[("name", self.label.as_str())],
+        );
 
         v_flex()
             .id(id)
@@ -68,26 +71,36 @@ impl RenderOnce for ProjectEmptyState {
                             .child(Label::new(label).size(LabelSize::Small).color(Color::Muted)),
                     )
                     .child(
-                        Button::new("open_project", "打开项目")
-                            .full_width()
-                            .key_binding(self.open_project_key_binding)
-                            .when_some(self.on_open_project, |button, handler| {
-                                button.on_click(handler)
-                            }),
+                        Button::new(
+                            "open_project",
+                            localization::text("project.empty_state.open_project"),
+                        )
+                        .full_width()
+                        .key_binding(self.open_project_key_binding)
+                        .when_some(self.on_open_project, |button, handler| {
+                            button.on_click(handler)
+                        }),
                     )
                     .child(
                         h_flex()
                             .gap_2()
                             .child(Divider::horizontal().color(DividerColor::Border))
-                            .child(Label::new("或").size(LabelSize::XSmall).color(Color::Muted))
+                            .child(
+                                Label::new(localization::text("common.or"))
+                                    .size(LabelSize::XSmall)
+                                    .color(Color::Muted),
+                            )
                             .child(Divider::horizontal().color(DividerColor::Border)),
                     )
                     .child(
-                        Button::new("clone_repo", "克隆仓库")
-                            .full_width()
-                            .when_some(self.on_clone_repo, |button, handler| {
-                                button.on_click(handler)
-                            }),
+                        Button::new(
+                            "clone_repo",
+                            localization::text("project.empty_state.clone_repo"),
+                        )
+                        .full_width()
+                        .when_some(self.on_clone_repo, |button, handler| {
+                            button.on_click(handler)
+                        }),
                     ),
             )
     }

@@ -1,8 +1,15 @@
 {
+  "agent.notification.view": "Просмотреть",
   "agent.thread.copied_context": "Скопировано {name}",
   "agent.thread.go_to_file": "Перейти к файлу",
+  "agent.toast.changes_rejected": "Изменения агента отклонены",
+  "agent.toast.undo": "Отменить",
   "common.close": "Закрыть",
+  "common.or": "или",
   "git.commit": "Коммит",
   "git.stage_file": "Добавить файл в индекс",
-  "git.unstage_file": "Убрать файл из индекса"
+  "git.unstage_file": "Убрать файл из индекса",
+  "project.empty_state.clone_repo": "Клонировать репозиторий",
+  "project.empty_state.open_project": "Открыть проект",
+  "project.empty_state.prompt": "Выберите вариант ниже, чтобы использовать {name}"
 }

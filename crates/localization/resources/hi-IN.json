@@ -1,0 +1,15 @@
+{
+  "agent.notification.view": "देखें",
+  "agent.thread.copied_context": "{name} कॉपी किया गया",
+  "agent.thread.go_to_file": "फ़ाइल पर जाएं",
+  "agent.toast.changes_rejected": "एजेंट बदलाव अस्वीकार किए गए",
+  "agent.toast.undo": "पूर्ववत करें",
+  "common.close": "बंद करें",
+  "common.or": "या",
+  "git.commit": "कमिट",
+  "git.stage_file": "फ़ाइल स्टेज करें",
+  "git.unstage_file": "फ़ाइल अनस्टेज करें",
+  "project.empty_state.clone_repo": "रिपॉज़िटरी क्लोन करें",
+  "project.empty_state.open_project": "प्रोजेक्ट खोलें",
+  "project.empty_state.prompt": "{name} का उपयोग करने के लिए नीचे कोई विकल्प चुनें"
+}

@@ -42,6 +42,22 @@ const RESOURCES: &[LocaleResource] = &[
         tag: "ru-RU",
         json: include_str!("../resources/ru-RU.json"),
     },
+    LocaleResource {
+        tag: "pt",
+        json: include_str!("../resources/pt.json"),
+    },
+    LocaleResource {
+        tag: "de-DE",
+        json: include_str!("../resources/de-DE.json"),
+    },
+    LocaleResource {
+        tag: "fr-FR",
+        json: include_str!("../resources/fr-FR.json"),
+    },
+    LocaleResource {
+        tag: "hi-IN",
+        json: include_str!("../resources/hi-IN.json"),
+    },
 ];
 
 static ACTIVE_LOCALE: OnceLock<RwLock<String>> = OnceLock::new();
@@ -65,6 +81,10 @@ pub fn available_locales() -> &'static [&'static str] {
         "ko-KR",
         "es-ES",
         "ru-RU",
+        "pt",
+        "de-DE",
+        "fr-FR",
+        "hi-IN",
     ]
 }
 
@@ -78,7 +98,10 @@ pub fn text_args(key: &str, args: &[(&str, &str)]) -> String {
 
 fn text_for_locale(locale: &str, key: &str) -> String {
     for candidate in locale_candidates(locale) {
-        if let Some(value) = catalogs().get(candidate.as_str()).and_then(|catalog| catalog.get(key)) {
+        if let Some(value) = catalogs()
+            .get(candidate.as_str())
+            .and_then(|catalog| catalog.get(key))
+        {
             return value.clone();
         }
     }
@@ -120,13 +143,15 @@ fn catalogs() -> &'static BTreeMap<&'static str, BTreeMap<String, String>> {
             .iter()
             .map(|resource| {
                 let parsed = serde_json::from_str::<BTreeMap<String, Value>>(resource.json)
-                    .unwrap_or_else(|err| panic!("invalid localization resource {}: {err}", resource.tag));
+                    .unwrap_or_else(|err| {
+                        panic!("invalid localization resource {}: {err}", resource.tag)
+                    });
                 let catalog = parsed
                     .into_iter()
                     .map(|(key, value)| {
-                        let value = value
-                            .as_str()
-                            .unwrap_or_else(|| panic!("localization value `{key}` is not a string"));
+                        let value = value.as_str().unwrap_or_else(|| {
+                            panic!("localization value `{key}` is not a string")
+                        });
                         (key, value.to_string())
                     })
                     .collect();
@@ -200,13 +225,18 @@ mod tests {
     fn falls_back_to_language_match_then_english() {
         assert_eq!(text_for_locale("zh-Hans-CN", "common.close"), "关闭");
 
-        assert_eq!(text_for_locale("fr-FR", "common.close"), "Close");
+        assert_eq!(text_for_locale("it-IT", "common.close"), "Close");
+        assert_eq!(text_for_locale("fr-CA", "common.close"), "Fermer");
     }
 
     #[test]
     fn interpolates_placeholders() {
         assert_eq!(
-            text_args_for_locale("en-US", "agent.thread.copied_context", &[("name", "main.rs")]),
+            text_args_for_locale(
+                "en-US",
+                "agent.thread.copied_context",
+                &[("name", "main.rs")]
+            ),
             "Copied main.rs"
         );
     }
@@ -216,7 +246,11 @@ mod tests {
         let en = catalogs().get("en-US").unwrap();
         let en_keys = en.keys().collect::<BTreeSet<_>>();
 
-        for locale in available_locales().iter().copied().filter(|locale| *locale != "en-US") {
+        for locale in available_locales()
+            .iter()
+            .copied()
+            .filter(|locale| *locale != "en-US")
+        {
             let catalog = catalogs().get(locale).unwrap();
             assert_eq!(en_keys, catalog.keys().collect::<BTreeSet<_>>(), "{locale}");
 

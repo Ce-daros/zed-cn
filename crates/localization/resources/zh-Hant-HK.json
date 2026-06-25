@@ -1,8 +1,15 @@
 {
+  "agent.notification.view": "檢視",
   "agent.thread.copied_context": "已複製 {name}",
   "agent.thread.go_to_file": "前往檔案",
+  "agent.toast.changes_rejected": "智能體變更已被拒絕",
+  "agent.toast.undo": "還原",
   "common.close": "關閉",
+  "common.or": "或",
   "git.commit": "提交",
   "git.stage_file": "暫存檔案",
-  "git.unstage_file": "取消暫存檔案"
+  "git.unstage_file": "取消暫存檔案",
+  "project.empty_state.clone_repo": "複製儲存庫",
+  "project.empty_state.open_project": "開啟專案",
+  "project.empty_state.prompt": "選擇下方任一選項以使用{name}"
 }

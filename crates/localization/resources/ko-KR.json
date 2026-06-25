@@ -1,8 +1,15 @@
 {
+  "agent.notification.view": "보기",
   "agent.thread.copied_context": "{name} 복사됨",
   "agent.thread.go_to_file": "파일로 이동",
+  "agent.toast.changes_rejected": "에이전트 변경 사항이 거부됨",
+  "agent.toast.undo": "실행 취소",
   "common.close": "닫기",
+  "common.or": "또는",
   "git.commit": "커밋",
   "git.stage_file": "파일 스테이징",
-  "git.unstage_file": "파일 스테이징 취소"
+  "git.unstage_file": "파일 스테이징 취소",
+  "project.empty_state.clone_repo": "리포지토리 클론",
+  "project.empty_state.open_project": "프로젝트 열기",
+  "project.empty_state.prompt": "{name}을(를) 사용하려면 아래 옵션을 선택하세요"
 }

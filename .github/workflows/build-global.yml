@@ -119,6 +119,10 @@ jobs:
             - Korean
             - Spanish (Spain)
             - Russian
+            - Portuguese
+            - German (Germany)
+            - French (France)
+            - Hindi (India)
           draft: false
           make_latest: true
           files: |

@@ -1,8 +1,15 @@
 {
+  "agent.notification.view": "表示",
   "agent.thread.copied_context": "{name} をコピーしました",
   "agent.thread.go_to_file": "ファイルに移動",
+  "agent.toast.changes_rejected": "エージェントの変更が拒否されました",
+  "agent.toast.undo": "元に戻す",
   "common.close": "閉じる",
+  "common.or": "または",
   "git.commit": "コミット",
   "git.stage_file": "ファイルをステージする",
-  "git.unstage_file": "ファイルをステージから外す"
+  "git.unstage_file": "ファイルをステージから外す",
+  "project.empty_state.clone_repo": "リポジトリをクローン",
+  "project.empty_state.open_project": "プロジェクトを開く",
+  "project.empty_state.prompt": "{name}を使うには下のオプションを選択"
 }
