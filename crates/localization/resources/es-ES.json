@@ -1,0 +1,8 @@
+{
+  "agent.thread.copied_context": "Se copió {name}",
+  "agent.thread.go_to_file": "Ir al archivo",
+  "common.close": "Cerrar",
+  "git.commit": "Commit",
+  "git.stage_file": "Preparar archivo",
+  "git.unstage_file": "Quitar de preparación"
+}
