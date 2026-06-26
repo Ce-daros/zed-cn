@@ -1627,11 +1627,17 @@ fn appearance_page() -> SettingsPage {
 fn keymap_page() -> SettingsPage {
     fn keybindings_section() -> [SettingsPageItem; 2] {
         [
-            SettingsPageItem::SectionHeader("快捷键"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.keymap.keybindings.section",
+            )),
             SettingsPageItem::ActionLink(ActionLink {
-                title: "编辑快捷键".into(),
-                description: Some("在键位映射编辑器中自定义快捷键。".into()),
-                button_text: "打开快捷键映射".into(),
+                title: localization::static_text("settings.keymap.edit_keybindings.title").into(),
+                description: Some(
+                    localization::static_text("settings.keymap.edit_keybindings.description")
+                        .into(),
+                ),
+                button_text: localization::static_text("settings.keymap.edit_keybindings.button")
+                    .into(),
                 on_click: Arc::new(|settings_window, window, cx| {
                     let Some(original_window) = settings_window.original_window else {
                         return;
@@ -1652,10 +1658,12 @@ fn keymap_page() -> SettingsPage {
 
     fn base_keymap_section() -> [SettingsPageItem; 2] {
         [
-            SettingsPageItem::SectionHeader("基础键位映射"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.keymap.base_keymap.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "基础键位映射",
-                description: "要使用的基础键位组名称。",
+                title: localization::static_text("settings.keymap.base_keymap.title"),
+                description: localization::static_text("settings.keymap.base_keymap.description"),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("base_keymap"),
@@ -1675,10 +1683,12 @@ fn keymap_page() -> SettingsPage {
 
     fn modal_editing_section() -> [SettingsPageItem; 3] {
         [
-            SettingsPageItem::SectionHeader("模态编辑"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.keymap.modal_editing.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "Vim 模式",
-                description: "启用 Vim 模式和键位映射。",
+                title: localization::static_text("settings.keymap.vim_mode.title"),
+                description: localization::static_text("settings.keymap.vim_mode.description"),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("vim_mode"),
@@ -1689,8 +1699,8 @@ fn keymap_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "Helix 模式",
-                description: "启用 Helix 模式和键位映射。",
+                title: localization::static_text("settings.keymap.helix_mode.title"),
+                description: localization::static_text("settings.keymap.helix_mode.description"),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("helix_mode"),
@@ -1710,7 +1720,7 @@ fn keymap_page() -> SettingsPage {
     );
 
     SettingsPage {
-        title: "键位映射",
+        title: localization::static_text("settings.keymap.title"),
         items,
     }
 }
@@ -1718,12 +1728,16 @@ fn keymap_page() -> SettingsPage {
 fn editor_page() -> SettingsPage {
     fn auto_save_section() -> [SettingsPageItem; 2] {
         [
-            SettingsPageItem::SectionHeader("自动保存"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.editor.auto_save.section",
+            )),
             SettingsPageItem::DynamicItem(DynamicItem {
                 discriminant: SettingItem {
                     files: USER,
-                    title: "自动保存模式",
-                    description: "何时自动保存缓冲区更改。",
+                    title: localization::static_text("settings.editor.auto_save_mode.title"),
+                    description: localization::static_text(
+                        "settings.editor.auto_save_mode.description",
+                    ),
                     field: Box::new(SettingField {
                         organization_override: None,
                         json_path: Some("autosave$"),
@@ -1779,8 +1793,12 @@ fn editor_page() -> SettingsPage {
                         settings::AutosaveSettingDiscriminants::Off => vec![],
                         settings::AutosaveSettingDiscriminants::AfterDelay => vec![SettingItem {
                             files: USER,
-                            title: "延迟（毫秒）",
-                            description: "在无操作一段时间后保存（毫秒）。",
+                            title: localization::static_text(
+                                "settings.editor.auto_save_delay.title",
+                            ),
+                            description: localization::static_text(
+                                "settings.editor.auto_save_delay.description",
+                            ),
                             field: Box::new(SettingField {
                                 organization_override: None,
                                 json_path: Some("autosave.after_delay.milliseconds"),
@@ -1819,10 +1837,14 @@ fn editor_page() -> SettingsPage {
 
     fn which_key_section() -> [SettingsPageItem; 3] {
         [
-            SettingsPageItem::SectionHeader("Which Key 菜单"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.editor.which_key.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "显示 Which Key 菜单",
-                description: "在等待多键组合时显示匹配的 which-key 菜单。",
+                title: localization::static_text("settings.editor.which_key_enabled.title"),
+                description: localization::static_text(
+                    "settings.editor.which_key_enabled.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("which_key.enabled"),
@@ -1840,8 +1862,10 @@ fn editor_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "菜单延迟",
-                description: "Which Key 菜单出现前的延迟（毫秒）。",
+                title: localization::static_text("settings.editor.which_key_delay.title"),
+                description: localization::static_text(
+                    "settings.editor.which_key_delay.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("which_key.delay_ms"),
@@ -1863,10 +1887,16 @@ fn editor_page() -> SettingsPage {
 
     fn multibuffer_section() -> [SettingsPageItem; 7] {
         [
-            SettingsPageItem::SectionHeader("多缓冲区"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.editor.multibuffer.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "在多缓冲区中双击",
-                description: "多缓冲区的某个摘录被双击时的处理方式。",
+                title: localization::static_text(
+                    "settings.editor.double_click_in_multibuffer.title",
+                ),
+                description: localization::static_text(
+                    "settings.editor.double_click_in_multibuffer.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("double_click_in_multibuffer"),
@@ -1881,8 +1911,10 @@ fn editor_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "展开摘录行数",
-                description: "默认将多缓冲区摘录展开多少行。",
+                title: localization::static_text("settings.editor.expand_excerpt_lines.title"),
+                description: localization::static_text(
+                    "settings.editor.expand_excerpt_lines.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("expand_excerpt_lines"),
@@ -1895,8 +1927,10 @@ fn editor_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "摘录上下文行数",
-                description: "默认在多缓冲区摘录中提供多少行上下文。",
+                title: localization::static_text("settings.editor.excerpt_context_lines.title"),
+                description: localization::static_text(
+                    "settings.editor.excerpt_context_lines.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("excerpt_context_lines"),
@@ -1909,8 +1943,12 @@ fn editor_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "按深度展开大纲",
-                description: "当前文件中大纲项默认展开的深度。",
+                title: localization::static_text(
+                    "settings.editor.expand_outlines_with_depth.title",
+                ),
+                description: localization::static_text(
+                    "settings.editor.expand_outlines_with_depth.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("outline_panel.expand_outlines_with_depth"),
@@ -1933,8 +1971,10 @@ fn editor_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "差异视图样式",
-                description: "在编辑器中如何显示差异。",
+                title: localization::static_text("settings.editor.diff_view_style.title"),
+                description: localization::static_text(
+                    "settings.editor.diff_view_style.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("diff_view_style"),
@@ -1947,8 +1987,10 @@ fn editor_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "分栏差异视图最小宽度",
-                description: "分栏差异视图的最小宽度（按列计）。当编辑器更窄时，差异视图会自动切换到统一模式。设为 0 可禁用。",
+                title: localization::static_text("settings.editor.minimum_split_diff_width.title"),
+                description: localization::static_text(
+                    "settings.editor.minimum_split_diff_width.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("minimum_split_diff_width"),
