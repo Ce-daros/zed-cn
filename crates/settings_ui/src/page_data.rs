@@ -4795,10 +4795,14 @@ fn window_and_layout_page() -> SettingsPage {
 
     fn tab_bar_section() -> [SettingsPageItem; 9] {
         [
-            SettingsPageItem::SectionHeader("标签页栏"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.window_layout.tab_bar.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "显示标签页栏",
-                description: "在编辑器中显示标签页栏。",
+                title: localization::static_text("settings.window_layout.tab_bar_show.title"),
+                description: localization::static_text(
+                    "settings.window_layout.tab_bar_show.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("tab_bar.show"),
@@ -4811,8 +4815,10 @@ fn window_and_layout_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "在标签页中显示 Git 状态",
-                description: "在标签页上显示文件的 Git 状态。",
+                title: localization::static_text("settings.window_layout.tab_bar_git_status.title"),
+                description: localization::static_text(
+                    "settings.window_layout.tab_bar_git_status.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("tabs.git_status"),
@@ -4825,8 +4831,10 @@ fn window_and_layout_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "在标签页中显示文件图标",
-                description: "显示标签页的文件图标。",
+                title: localization::static_text("settings.window_layout.tab_bar_file_icons.title"),
+                description: localization::static_text(
+                    "settings.window_layout.tab_bar_file_icons.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("tabs.file_icons"),
@@ -4839,8 +4847,12 @@ fn window_and_layout_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "标签页关闭按钮位置",
-                description: "标签页中关闭按钮的位置。",
+                title: localization::static_text(
+                    "settings.window_layout.tab_bar_close_position.title",
+                ),
+                description: localization::static_text(
+                    "settings.window_layout.tab_bar_close_position.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("tabs.close_position"),
@@ -4856,8 +4868,10 @@ fn window_and_layout_page() -> SettingsPage {
             }),
             SettingsPageItem::SettingItem(SettingItem {
                 files: USER,
-                title: "最大标签页数",
-                description: "单个窗格中可打开的最大标签页数。不会关闭未保存的标签页。",
+                title: localization::static_text("settings.window_layout.tab_bar_max_tabs.title"),
+                description: localization::static_text(
+                    "settings.window_layout.tab_bar_max_tabs.description",
+                ),
                 // todo(settings_ui): The default for this value is null and it's use in code
                 // is complex, so I'm going to come back to this later
                 field: Box::new(
@@ -4874,8 +4888,12 @@ fn window_and_layout_page() -> SettingsPage {
                 metadata: None,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "显示导航历史按钮",
-                description: "在标签页栏中显示导航历史按钮。",
+                title: localization::static_text(
+                    "settings.window_layout.tab_bar_show_nav_history_buttons.title",
+                ),
+                description: localization::static_text(
+                    "settings.window_layout.tab_bar_show_nav_history_buttons.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("tab_bar.show_nav_history_buttons"),
@@ -4897,8 +4915,12 @@ fn window_and_layout_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "显示标签页栏按钮",
-                description: "显示新建、拆分窗格、缩放等标签页栏按钮。",
+                title: localization::static_text(
+                    "settings.window_layout.tab_bar_show_tab_bar_buttons.title",
+                ),
+                description: localization::static_text(
+                    "settings.window_layout.tab_bar_show_tab_bar_buttons.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("tab_bar.show_tab_bar_buttons"),
@@ -4920,8 +4942,12 @@ fn window_and_layout_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "固定标签页布局",
-                description: "将固定标签页显示在未固定标签页上方的单独一行。",
+                title: localization::static_text(
+                    "settings.window_layout.tab_bar_pinned_tabs_layout.title",
+                ),
+                description: localization::static_text(
+                    "settings.window_layout.tab_bar_pinned_tabs_layout.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("tab_bar.show_pinned_tabs_in_separate_row"),
