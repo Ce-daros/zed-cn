@@ -2009,10 +2009,14 @@ fn editor_page() -> SettingsPage {
 
     fn scrolling_section() -> [SettingsPageItem; 9] {
         [
-            SettingsPageItem::SectionHeader("滚动"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.editor.scrolling.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "允许滚动到最后一行之后",
-                description: "编辑器是否允许滚动到最后一行之后。",
+                title: localization::static_text("settings.editor.scroll_beyond_last_line.title"),
+                description: localization::static_text(
+                    "settings.editor.scroll_beyond_last_line.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("scroll_beyond_last_line"),
@@ -2027,8 +2031,10 @@ fn editor_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "垂直滚动边距",
-                description: "自动滚动时在光标上下保留的行数。",
+                title: localization::static_text("settings.editor.vertical_scroll_margin.title"),
+                description: localization::static_text(
+                    "settings.editor.vertical_scroll_margin.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("vertical_scroll_margin"),
@@ -2043,8 +2049,10 @@ fn editor_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "水平滚动边距",
-                description: "使用鼠标滚动时在两侧保留的字符数。",
+                title: localization::static_text("settings.editor.horizontal_scroll_margin.title"),
+                description: localization::static_text(
+                    "settings.editor.horizontal_scroll_margin.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("horizontal_scroll_margin"),
@@ -2059,8 +2067,10 @@ fn editor_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "滚动灵敏度",
-                description: "水平和垂直滚动的灵敏度倍率。",
+                title: localization::static_text("settings.editor.scroll_sensitivity.title"),
+                description: localization::static_text(
+                    "settings.editor.scroll_sensitivity.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("scroll_sensitivity"),
@@ -2073,8 +2083,10 @@ fn editor_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "鼠标滚轮缩放",
-                description: "按住主修饰键时是否使用鼠标滚轮缩放编辑器字体大小。",
+                title: localization::static_text("settings.editor.mouse_wheel_zoom.title"),
+                description: localization::static_text(
+                    "settings.editor.mouse_wheel_zoom.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("mouse_wheel_zoom"),
@@ -2087,8 +2099,10 @@ fn editor_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "快速滚动灵敏度",
-                description: "水平和垂直快速滚动的灵敏度倍率。",
+                title: localization::static_text("settings.editor.fast_scroll_sensitivity.title"),
+                description: localization::static_text(
+                    "settings.editor.fast_scroll_sensitivity.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("fast_scroll_sensitivity"),
@@ -2103,8 +2117,10 @@ fn editor_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "点击时自动滚动",
-                description: "点击可见文本区域边缘附近时是否滚动。",
+                title: localization::static_text("settings.editor.autoscroll_on_clicks.title"),
+                description: localization::static_text(
+                    "settings.editor.autoscroll_on_clicks.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("autoscroll_on_clicks"),
@@ -2117,8 +2133,8 @@ fn editor_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "粘性滚动",
-                description: "是否将作用域固定在编辑器顶部",
+                title: localization::static_text("settings.editor.sticky_scroll.title"),
+                description: localization::static_text("settings.editor.sticky_scroll.description"),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("sticky_scroll.enabled"),
@@ -2145,10 +2161,14 @@ fn editor_page() -> SettingsPage {
 
     fn signature_help_section() -> [SettingsPageItem; 4] {
         [
-            SettingsPageItem::SectionHeader("签名帮助"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.editor.signature_help.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "自动签名帮助",
-                description: "自动显示签名帮助弹窗。",
+                title: localization::static_text("settings.editor.auto_signature_help.title"),
+                description: localization::static_text(
+                    "settings.editor.auto_signature_help.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("auto_signature_help"),
@@ -2161,8 +2181,12 @@ fn editor_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "编辑后显示签名帮助",
-                description: "在补全或括号配对插入后显示签名帮助弹窗。",
+                title: localization::static_text(
+                    "settings.editor.show_signature_help_after_edits.title",
+                ),
+                description: localization::static_text(
+                    "settings.editor.show_signature_help_after_edits.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("show_signature_help_after_edits"),
@@ -2180,8 +2204,10 @@ fn editor_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "代码片段排序顺序",
-                description: "决定代码片段相对于其他补全项的排序方式。",
+                title: localization::static_text("settings.editor.snippet_sort_order.title"),
+                description: localization::static_text(
+                    "settings.editor.snippet_sort_order.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("snippet_sort_order"),
@@ -2198,10 +2224,14 @@ fn editor_page() -> SettingsPage {
 
     fn hover_popover_section() -> [SettingsPageItem; 5] {
         [
-            SettingsPageItem::SectionHeader("悬停弹窗"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.editor.hover_popover.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "启用",
-                description: "鼠标移到编辑器符号上时显示信息悬浮框。",
+                title: localization::static_text("settings.editor.hover_popover_enabled.title"),
+                description: localization::static_text(
+                    "settings.editor.hover_popover_enabled.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("hover_popover_enabled"),
@@ -2215,8 +2245,10 @@ fn editor_page() -> SettingsPage {
             }),
             // todo(settings ui): add units to this number input
             SettingsPageItem::SettingItem(SettingItem {
-                title: "延迟",
-                description: "显示信息提示框前等待的时间（毫秒）。",
+                title: localization::static_text("settings.editor.hover_popover_delay.title"),
+                description: localization::static_text(
+                    "settings.editor.hover_popover_delay.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("hover_popover_delay"),
@@ -2229,8 +2261,10 @@ fn editor_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "粘附",
-                description: "当鼠标移向悬停弹窗时是否保持其显示，以便与其中内容交互。",
+                title: localization::static_text("settings.editor.hover_popover_sticky.title"),
+                description: localization::static_text(
+                    "settings.editor.hover_popover_sticky.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("hover_popover_sticky"),
@@ -2244,8 +2278,12 @@ fn editor_page() -> SettingsPage {
             }),
             // todo(settings ui): add units to this number input
             SettingsPageItem::SettingItem(SettingItem {
-                title: "隐藏延迟",
-                description: "鼠标移开后隐藏悬停弹窗前等待的时间（毫秒）。",
+                title: localization::static_text(
+                    "settings.editor.hover_popover_hiding_delay.title",
+                ),
+                description: localization::static_text(
+                    "settings.editor.hover_popover_hiding_delay.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("hover_popover_hiding_delay"),
@@ -2264,10 +2302,16 @@ fn editor_page() -> SettingsPage {
 
     fn drag_and_drop_selection_section() -> [SettingsPageItem; 3] {
         [
-            SettingsPageItem::SectionHeader("拖放选区"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.editor.drag_and_drop_selection.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "启用",
-                description: "启用drag and drop selection。",
+                title: localization::static_text(
+                    "settings.editor.drag_and_drop_selection_enabled.title",
+                ),
+                description: localization::static_text(
+                    "settings.editor.drag_and_drop_selection_enabled.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("drag_and_drop_selection.enabled"),
@@ -2290,8 +2334,12 @@ fn editor_page() -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "延迟",
-                description: "拖放选区开始前的延迟（毫秒）。",
+                title: localization::static_text(
+                    "settings.editor.drag_and_drop_selection_delay.title",
+                ),
+                description: localization::static_text(
+                    "settings.editor.drag_and_drop_selection_delay.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("drag_and_drop_selection.delay"),
