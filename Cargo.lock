@@ -23026,6 +23026,7 @@ dependencies = [
  "language_tools",
  "languages",
  "line_ending_selector",
+ "localization",
  "log",
  "markdown",
  "markdown_preview",
