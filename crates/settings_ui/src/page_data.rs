@@ -3446,10 +3446,16 @@ fn editor_page() -> SettingsPage {
 fn languages_and_tools_page(cx: &App) -> SettingsPage {
     fn file_types_section() -> [SettingsPageItem; 2] {
         [
-            SettingsPageItem::SectionHeader("文件 Types"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.languages_tools.file_types.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "文件 Type Associations",
-                description: "将语言映射到应按该语言处理的文件和扩展名。",
+                title: localization::static_text(
+                    "settings.languages_tools.file_type_associations.title",
+                ),
+                description: localization::static_text(
+                    "settings.languages_tools.file_type_associations.description",
+                ),
                 field: Box::new(
                     SettingField {
                         organization_override: None,
@@ -3471,10 +3477,16 @@ fn languages_and_tools_page(cx: &App) -> SettingsPage {
 
     fn diagnostics_section() -> [SettingsPageItem; 3] {
         [
-            SettingsPageItem::SectionHeader("诊断"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.languages_tools.diagnostics.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "最大严重级别",
-                description: "用于筛除编辑器中显示的诊断的级别。",
+                title: localization::static_text(
+                    "settings.languages_tools.diagnostics_max_severity.title",
+                ),
+                description: localization::static_text(
+                    "settings.languages_tools.diagnostics_max_severity.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("diagnostics_max_severity"),
@@ -3489,8 +3501,12 @@ fn languages_and_tools_page(cx: &App) -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "包括警告",
-                description: "默认是否显示警告。",
+                title: localization::static_text(
+                    "settings.languages_tools.diagnostics_include_warnings.title",
+                ),
+                description: localization::static_text(
+                    "settings.languages_tools.diagnostics_include_warnings.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("diagnostics.include_warnings"),
@@ -3516,10 +3532,16 @@ fn languages_and_tools_page(cx: &App) -> SettingsPage {
 
     fn inline_diagnostics_section() -> [SettingsPageItem; 5] {
         [
-            SettingsPageItem::SectionHeader("内联诊断"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.languages_tools.inline_diagnostics.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "启用",
-                description: "默认是否以内联形式显示诊断。",
+                title: localization::static_text(
+                    "settings.languages_tools.inline_diagnostics_enabled.title",
+                ),
+                description: localization::static_text(
+                    "settings.languages_tools.inline_diagnostics_enabled.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("diagnostics.inline.enabled"),
@@ -3545,8 +3567,12 @@ fn languages_and_tools_page(cx: &App) -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "更新防抖",
-                description: "最后一次诊断更新后显示内联诊断的延迟（毫秒）。",
+                title: localization::static_text(
+                    "settings.languages_tools.inline_diagnostics_update_debounce.title",
+                ),
+                description: localization::static_text(
+                    "settings.languages_tools.inline_diagnostics_update_debounce.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("diagnostics.inline.update_debounce_ms"),
@@ -3572,8 +3598,12 @@ fn languages_and_tools_page(cx: &App) -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "间距",
-                description: "源代码行末与内联诊断起始位置之间的间距。",
+                title: localization::static_text(
+                    "settings.languages_tools.inline_diagnostics_padding.title",
+                ),
+                description: localization::static_text(
+                    "settings.languages_tools.inline_diagnostics_padding.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("diagnostics.inline.padding"),
@@ -3599,8 +3629,12 @@ fn languages_and_tools_page(cx: &App) -> SettingsPage {
                 files: USER,
             }),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "最小列",
-                description: "显示内联诊断的最小列号。",
+                title: localization::static_text(
+                    "settings.languages_tools.inline_diagnostics_min_column.title",
+                ),
+                description: localization::static_text(
+                    "settings.languages_tools.inline_diagnostics_min_column.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("diagnostics.inline.min_column"),
@@ -3630,10 +3664,16 @@ fn languages_and_tools_page(cx: &App) -> SettingsPage {
 
     fn lsp_pull_diagnostics_section() -> [SettingsPageItem; 3] {
         [
-            SettingsPageItem::SectionHeader("LSP Pull 诊断"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.languages_tools.lsp_pull_diagnostics.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "启用",
-                description: "是否拉取语言服务器提供的诊断。",
+                title: localization::static_text(
+                    "settings.languages_tools.lsp_pull_diagnostics_enabled.title",
+                ),
+                description: localization::static_text(
+                    "settings.languages_tools.lsp_pull_diagnostics_enabled.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("diagnostics.lsp_pull_diagnostics.enabled"),
@@ -3660,8 +3700,12 @@ fn languages_and_tools_page(cx: &App) -> SettingsPage {
             }),
             // todo(settings_ui): Needs unit
             SettingsPageItem::SettingItem(SettingItem {
-                title: "防抖",
-                description: "拉取语言服务器诊断前等待的最短时间。",
+                title: localization::static_text(
+                    "settings.languages_tools.lsp_pull_diagnostics_debounce.title",
+                ),
+                description: localization::static_text(
+                    "settings.languages_tools.lsp_pull_diagnostics_debounce.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("diagnostics.lsp_pull_diagnostics.debounce_ms"),
@@ -3691,10 +3735,16 @@ fn languages_and_tools_page(cx: &App) -> SettingsPage {
 
     fn lsp_highlights_section() -> [SettingsPageItem; 2] {
         [
-            SettingsPageItem::SectionHeader("LSP 高亮"),
+            SettingsPageItem::SectionHeader(localization::static_text(
+                "settings.languages_tools.lsp_highlights.section",
+            )),
             SettingsPageItem::SettingItem(SettingItem {
-                title: "防抖",
-                description: "向语言查询高亮前的防抖延迟。",
+                title: localization::static_text(
+                    "settings.languages_tools.lsp_highlights_debounce.title",
+                ),
+                description: localization::static_text(
+                    "settings.languages_tools.lsp_highlights_debounce.description",
+                ),
                 field: Box::new(SettingField {
                     organization_override: None,
                     json_path: Some("lsp_highlight_debounce"),
@@ -3714,37 +3764,34 @@ fn languages_and_tools_page(cx: &App) -> SettingsPage {
     fn languages_list_section(cx: &App) -> Box<[SettingsPageItem]> {
         // todo(settings_ui): Refresh on extension (un)/installed
         // Note that `crates/json_schema_store` solves the same problem, there is probably a way to unify the two
-        std::iter::once(SettingsPageItem::SectionHeader("语言"))
-            .chain(all_language_names(cx).into_iter().map(|language_name| {
-                let link = format!("languages.{language_name}");
-                SettingsPageItem::SubPageLink(SubPageLink {
-                    title: language_name,
-                    r#type: crate::SubPageType::Language,
-                    description: None,
-                    json_path: Some(link.leak()),
-                    in_json: true,
-                    files: USER | PROJECT,
-                    render: |this, scroll_handle, window, cx| {
-                        let items: Box<[SettingsPageItem]> = concat_sections!(
-                            language_settings_data(),
-                            non_editor_language_settings_data(),
-                            edit_prediction_language_settings_section()
-                        );
-                        this.render_sub_page_items(
-                            items.iter().enumerate(),
-                            scroll_handle,
-                            window,
-                            cx,
-                        )
+        std::iter::once(SettingsPageItem::SectionHeader(localization::static_text(
+            "settings.languages_tools.languages.section",
+        )))
+        .chain(all_language_names(cx).into_iter().map(|language_name| {
+            let link = format!("languages.{language_name}");
+            SettingsPageItem::SubPageLink(SubPageLink {
+                title: language_name,
+                r#type: crate::SubPageType::Language,
+                description: None,
+                json_path: Some(link.leak()),
+                in_json: true,
+                files: USER | PROJECT,
+                render: |this, scroll_handle, window, cx| {
+                    let items: Box<[SettingsPageItem]> = concat_sections!(
+                        language_settings_data(),
+                        non_editor_language_settings_data(),
+                        edit_prediction_language_settings_section()
+                    );
+                    this.render_sub_page_items(items.iter().enumerate(), scroll_handle, window, cx)
                         .into_any_element()
-                    },
-                })
-            }))
-            .collect()
+                },
+            })
+        }))
+        .collect()
     }
 
     SettingsPage {
-        title: "语言与工具",
+        title: localization::static_text("settings.languages_tools.page.title"),
         items: {
             concat_sections!(
                 non_editor_language_settings_data(),
@@ -10311,7 +10358,7 @@ fn language_settings_data() -> Box<[SettingsPageItem]> {
     }
 }
 
-/// LanguageSettings items that should be included in the "语言与工具" page
+/// LanguageSettings items that should be included in the Languages & Tools page.
 /// not the "编辑器" page
 fn non_editor_language_settings_data() -> Box<[SettingsPageItem]> {
     fn lsp_section() -> [SettingsPageItem; 9] {
